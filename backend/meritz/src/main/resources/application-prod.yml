@@ -12,6 +12,6 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        show-sql: true
-        format_sql: true
-    database-platform: org.hibernate.dialect.Oracle11cDialect
+        dialect: org.hibernate.dialect.Oracle11gDialect
+      show_sql: true
+      format_sql: true
