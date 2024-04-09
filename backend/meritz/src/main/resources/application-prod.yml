@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:oracle://oracle:1521/meritz
+    url: jdbc:oracle:thin:@//oracle:1521/XE
     driver-class-name: oracle.jdbc.driver.OracleDriver
     username: ${ORACLE_USERNAME}
     password: ${ORACLE_PASSWORD}
@@ -14,4 +14,4 @@ spring:
       hibernate:
         show-sql: true
         format_sql: true
-        dialect: org.hibernate.dialect.Oracle11gDialect
+    database-platform: org.hibernate.dialect.Oracle11cDialect
