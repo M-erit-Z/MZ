@@ -6,7 +6,7 @@ spring:
     url: jdbc:mysql://mysql:3306/meritz?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: ${SERVER_MYSQL_USERNAME}
     password: ${SERVER_MYSQL_PASSWORD}
-    dialect: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
