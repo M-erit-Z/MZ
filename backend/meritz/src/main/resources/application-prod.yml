@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url:
+    url: jdbc:oracle://oracle:1521/meritz
     driver-class-name: oracle.jdbc.driver.OracleDriver
     username: ${ORACLE_USERNAME}
     password: ${ORACLE_PASSWORD}
