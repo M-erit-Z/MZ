@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 public class Client extends BaseEntity {
 
 }
