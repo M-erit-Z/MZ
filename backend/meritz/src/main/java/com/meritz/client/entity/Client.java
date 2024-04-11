@@ -1,4 +1,16 @@
 package com.meritz.client.entity;
 
-public class Client {
+import com.meritz.global.entity.BaseEntity;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@Getter
+@Entity
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Client extends BaseEntity {
 }
