@@ -105,8 +105,35 @@ let onTrack = (event, otherKey) => {
     // remoteStreamElement.play();
 };
 
-const createPeerConnection = (otherKey) =>{
-    const pc = new RTCPeerConnection();
+// const createPeerConnection = (otherKey) =>{
+//     const pc = new RTCPeerConnection();
+//     try {
+//         pc.addEventListener('icecandidate', (event) =>{
+//             onIceCandidate(event, otherKey);
+//         });
+//         pc.addEventListener('track', (event) =>{
+//             onTrack(event, otherKey);
+//         });
+//         if(localStream !== undefined){
+//             localStream.getTracks().forEach(track => {
+//                 pc.addTrack(track, localStream);
+//             });
+//         }
+//
+//         console.log('PeerConnection created');
+//     } catch (error) {
+//         console.error('PeerConnection failed: ', error);
+//     }
+//     return pc;
+// }
+
+const createPeerConnection = (otherKey) => {
+    const configuration = {
+        iceServers: [{
+            urls: "stun:stun.l.google.com:19302"
+        }]
+    };
+    const pc = new RTCPeerConnection(configuration);
     try {
         pc.addEventListener('icecandidate', (event) =>{
             onIceCandidate(event, otherKey);
@@ -119,13 +146,13 @@ const createPeerConnection = (otherKey) =>{
                 pc.addTrack(track, localStream);
             });
         }
-
         console.log('PeerConnection created');
     } catch (error) {
         console.error('PeerConnection failed: ', error);
     }
     return pc;
 }
+
 
 let onIceCandidate = (event, otherKey) => {
     if (event.candidate) {
