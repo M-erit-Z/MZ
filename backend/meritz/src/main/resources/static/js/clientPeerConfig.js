@@ -4,6 +4,7 @@ let pcListMap = new Map();
 let roomId;
 let otherKeyList = [];
 let localStream = undefined;
+let isCameraOn= true;  // 카메라가 켜져 있는지의 초기 상태
 
 const startCam = async () =>{
     if(navigator.mediaDevices !== undefined){
@@ -21,8 +22,16 @@ const startCam = async () =>{
                 console.error("Error accessing media devices:", error);
             });
     }
-
 }
+
+const offCam = () => {
+    if (localStream) {
+        localStream.getTracks().forEach(track => {
+            track.stop();
+        });
+        console.log('Camera and microphone are turned off');
+    }
+};
 
 // 소켓 연결
 const connectSocket = async () =>{
@@ -225,32 +234,20 @@ document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
 });
 
 // 카메라 끄기 및 켜기
-let isCameraOn= true;  // 카메라가 켜져 있는지의 초기 상태
 function onOffCamera() {
     // 카메라 상태 토글
     isCameraOn = !isCameraOn;
-
     // 버튼 요소 선택
     const cameraButton = document.getElementById('cameraButton');
-
     // 상태에 따라 버튼 텍스트 변경
     if (isCameraOn) {
         cameraButton.innerText = "카메라 끄기";
-        // 카메라를 켜는 코드
-        startCamera();
+        console.log("카메라 켜기");
+        startCam();
     } else {
         cameraButton.innerText = "카메라 켜기";
-        // 카메라를 끄는 코드
-        stopCamera();
+        console.log("카메라 끄기");
+        offCam();
     }
 }
 
-function startCamera() {
-    // 여기에 카메라를 켜는 로직을 추가하세요.
-    console.log("카메라 켜짐");
-}
-
-function stopCamera() {
-    // 여기에 카메라를 끄는 로직을 추가하세요.
-    console.log("카메라 꺼짐");
-}
