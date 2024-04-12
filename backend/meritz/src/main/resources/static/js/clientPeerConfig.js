@@ -196,3 +196,34 @@ document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
 
     },1000);
 });
+
+// 카메라 끄기 및 켜기
+let isCameraOn= true;  // 카메라가 켜져 있는지의 초기 상태
+function onOffCamera() {
+    // 카메라 상태 토글
+    isCameraOn = !isCameraOn;
+
+    // 버튼 요소 선택
+    const cameraButton = document.getElementById('cameraButton');
+
+    // 상태에 따라 버튼 텍스트 변경
+    if (isCameraOn) {
+        cameraButton.innerText = "카메라 끄기";
+        // 카메라를 켜는 코드
+        startCamera();
+    } else {
+        cameraButton.innerText = "카메라 켜기";
+        // 카메라를 끄는 코드
+        stopCamera();
+    }
+}
+
+function startCamera() {
+    // 여기에 카메라를 켜는 로직을 추가하세요.
+    console.log("카메라 켜짐");
+}
+
+function stopCamera() {
+    // 여기에 카메라를 끄는 로직을 추가하세요.
+    console.log("카메라 꺼짐");
+}
