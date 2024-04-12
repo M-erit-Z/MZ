@@ -4,11 +4,10 @@ let pcListMap = new Map();
 let roomId;
 let otherKeyList = [];
 let localStream = undefined;
-let isCameraOn= true;  // 카메라가 켜져 있는지의 초기 상태
 
 const startCam = async () =>{
     if(navigator.mediaDevices !== undefined){
-        await navigator.mediaDevices.getUserMedia({ audio: true, video : true })
+        await navigator.mediaDevices.getUserMedia({ audio: true, video : { facingMode: "environment" } })
             .then(async (stream) => {
                 console.log('Stream found');
                 //웹캠, 마이크의 스트림 정보를 글로벌 변수로 저장한다.
@@ -23,15 +22,6 @@ const startCam = async () =>{
             });
     }
 }
-
-const offCam = () => {
-    if (localStream) {
-        localStream.getTracks().forEach(track => {
-            track.stop();
-        });
-        console.log('Camera and microphone are turned off');
-    }
-};
 
 // 소켓 연결
 const connectSocket = async () =>{
@@ -206,21 +196,4 @@ document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
     },1000);
 });
 
-// 카메라 끄기 및 켜기
-function onOffCamera() {
-    // 카메라 상태 토글
-    isCameraOn = !isCameraOn;
-    // 버튼 요소 선택
-    const cameraButton = document.getElementById('cameraButton');
-    // 상태에 따라 버튼 텍스트 변경
-    if (isCameraOn) {
-        cameraButton.innerText = "카메라 끄기";
-        console.log("카메라 켜기");
-        startCam();
-    } else {
-        cameraButton.innerText = "카메라 켜기";
-        console.log("카메라 끄기");
-        offCam();
-    }
-}
 
