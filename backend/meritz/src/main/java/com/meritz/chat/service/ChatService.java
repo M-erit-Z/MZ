@@ -1,4 +1,4 @@
-package com.meritz.manager.service;
+package com.meritz.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ManagerService {
+public class ChatService {
 }
