@@ -1,26 +1,26 @@
-package com.meritz.manager.entity;
+package com.meritz.chat.entity;
 
 import com.meritz.global.entity.BaseEntity;
 import com.meritz.room.entity.Room;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
-
 @Getter
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Manager extends BaseEntity {
+public class Chat extends BaseEntity {
 
-    private String managerName;
+    private String messages;
 
-    @OneToMany(mappedBy = "manager")
-    private List<Room> rooms;
+    @OneToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
 }
