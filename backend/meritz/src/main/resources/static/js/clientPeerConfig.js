@@ -122,13 +122,13 @@ const createPeerConnection = (otherKey) =>{
                 pc.addTrack(track, localStream);
             });
         }
-
         console.log('PeerConnection created');
     } catch (error) {
         console.error('PeerConnection failed: ', error);
     }
     return pc;
 }
+
 
 let onIceCandidate = (event, otherKey) => {
     if (event.candidate) {
