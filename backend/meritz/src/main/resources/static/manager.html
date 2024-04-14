@@ -13,8 +13,8 @@
     <input type="number" id="roomIdInput" placeholder="방 번호 입력"/>
     <!-- 룸 아이디를 입력후 클릭하는 button -->
     <button type="button" id="enterRoomBtn">enter Room</button>
-    <button type="button" id="startSteamBtn" style="display: none;">start Streams</button>
-    <!-- enterRoomBtn 클릭시 나타남, Streams 정보를 담은 Peer 를 웹소켓 ( 시그널링 )   -->
+    <button type="button" id="startSteamBtn" >start Streams</button>
+<!--     enterRoomBtn 클릭시 나타남, Streams 정보를 담은 Peer 를 웹소켓 ( 시그널링 )   -->
 </div>
 <div class="video-section" id="remoteStreamDiv">
 </div>
@@ -56,7 +56,8 @@
         <button type="submit">제출</button>
     </form>
 </div>
-<script src="js/managerPeerConfig.js">
+<script src="js/managerPeerConfig.js"></script>
+<script>
     function sendScript(message) {
         // 스크립트 전송 로직
         updateChatHistory('관리자', message);
