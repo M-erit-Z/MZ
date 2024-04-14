@@ -111,7 +111,12 @@ let onTrack = (event, otherKey) => {
 };
 
 const createPeerConnection = (otherKey) =>{
-    const pc = new RTCPeerConnection();
+    const configuration = {
+        iceServers: [{
+            urls: "stun:stun.l.google.com:19302"
+        }]
+    };
+    const pc = new RTCPeerConnection(configuration);
     console.log(`Connection state: ${pc.connectionState}`);
     try {
         if (localStream) {
