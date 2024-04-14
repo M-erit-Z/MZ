@@ -114,6 +114,14 @@ const createPeerConnection = (otherKey) =>{
     const pc = new RTCPeerConnection();
     console.log(`Connection state: ${pc.connectionState}`);
     try {
+        if (localStream) {
+            localStream.getTracks().forEach(track => {
+                pc.addTrack(track, localStream);
+                console.log(`Track added: ${track.kind}`);
+            });
+        } else {
+            console.log("No local stream available");
+        }
         pc.addEventListener('icecandidate', (event) =>{
             console.log("manager icecandidate start");
             onIceCandidate(event, otherKey);
