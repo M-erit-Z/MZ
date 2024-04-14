@@ -28,38 +28,46 @@ const connectSocket = async () =>{
 
     stompClient.connect({}, function () {
         console.log('Connected to WebRTC server');
+        console.log('0');
+
 
         //iceCandidate peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/iceCandidate/${myKey}/${roomId}`, candidate => {
             const key = JSON.parse(candidate.body).key
             const message = JSON.parse(candidate.body).body;
+            console.log("1");
 
             // 해당 key에 해당되는 peer 에 받은 정보를 addIceCandidate 해준다.
             pcListMap.get(key).addIceCandidate(new RTCIceCandidate({candidate:message.candidate,sdpMLineIndex:message.sdpMLineIndex,sdpMid:message.sdpMid}));
-
+            console.log("2");
         });
 
         //offer peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/offer/${myKey}/${roomId}`, offer => {
             const key = JSON.parse(offer.body).key;
             const message = JSON.parse(offer.body).body;
+            console.log("3");
 
             // 해당 key에 새로운 peerConnection 를 생성해준후 pcListMap 에 저장해준다.
             pcListMap.set(key,createPeerConnection(key));
+            console.log("4");
             // 생성한 peer 에 offer정보를 setRemoteDescription 해준다.
             pcListMap.get(key).setRemoteDescription(new RTCSessionDescription({type:message.type,sdp:message.sdp}));
+            console.log("5");
             //sendAnswer 함수를 호출해준다.
             sendAnswer(pcListMap.get(key), key);
-
+            console.log("6");
         });
 
         //answer peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/answer/${myKey}/${roomId}`, answer =>{
             const key = JSON.parse(answer.body).key;
             const message = JSON.parse(answer.body).body;
+            console.log("7");
 
             // 해당 key에 해당되는 Peer 에 받은 정보를 setRemoteDescription 해준다.
             pcListMap.get(key).setRemoteDescription(new RTCSessionDescription(message));
+            console.log("8");
 
         });
 
@@ -67,7 +75,7 @@ const connectSocket = async () =>{
         stompClient.subscribe(`/topic/call/key`, message =>{
             //자신의 key를 보내는 send
             stompClient.send(`/app/send/key`, {}, JSON.stringify(myKey));
-
+            console.log("9");
         });
 
         //상대방의 key를 받는 subscribe
@@ -78,6 +86,7 @@ const connectSocket = async () =>{
             if(myKey !== key && otherKeyList.find((mapKey) => mapKey === myKey) === undefined){
                 otherKeyList.push(key);
             }
+            console.log("10");
         });
 
     });
@@ -101,37 +110,12 @@ let onTrack = (event, otherKey) => {
     // remoteStreamElement.play();
 };
 
-// const createPeerConnection = (otherKey) =>{
-//     const pc = new RTCPeerConnection();
-//     try {
-//         pc.addEventListener('icecandidate', (event) =>{
-//             onIceCandidate(event, otherKey);
-//         });
-//         pc.addEventListener('track', (event) =>{
-//             onTrack(event, otherKey);
-//         });
-//         if(localStream !== undefined){
-//             localStream.getTracks().forEach(track => {
-//                 pc.addTrack(track, localStream);
-//             });
-//         }
-//
-//         console.log('PeerConnection created');
-//     } catch (error) {
-//         console.error('PeerConnection failed: ', error);
-//     }
-//     return pc;
-// }
-
-const createPeerConnection = (otherKey) => {
-    const configuration = {
-        iceServers: [{
-            urls: "stun:stun.l.google.com:19302"
-        }]
-    };
-    const pc = new RTCPeerConnection(configuration);
+const createPeerConnection = (otherKey) =>{
+    const pc = new RTCPeerConnection();
+    console.log(`Connection state: ${pc.connectionState}`);
     try {
         pc.addEventListener('icecandidate', (event) =>{
+            console.log("manager icecandidate start");
             onIceCandidate(event, otherKey);
         });
         pc.addEventListener('track', (event) =>{
