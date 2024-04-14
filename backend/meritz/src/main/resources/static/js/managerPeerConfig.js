@@ -111,9 +111,22 @@ let onTrack = (event, otherKey) => {
 };
 
 const createPeerConnection = (otherKey) =>{
-    const pc = new RTCPeerConnection();
+    const configuration = {
+        iceServers: [{
+            urls: "stun:stun.l.google.com:19302"
+        }]
+    };
+    const pc = new RTCPeerConnection(configuration);
     console.log(`Connection state: ${pc.connectionState}`);
     try {
+        if (localStream) {
+            localStream.getTracks().forEach(track => {
+                pc.addTrack(track, localStream);
+                console.log(`Track added: ${track.kind}`);
+            });
+        } else {
+            console.log("No local stream available");
+        }
         pc.addEventListener('icecandidate', (event) =>{
             console.log("manager icecandidate start");
             onIceCandidate(event, otherKey);
