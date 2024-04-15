@@ -22,7 +22,8 @@ const startCam = async () =>{
 
 // 소켓 연결
 const connectSocket = async () =>{
-    const socket = new SockJS('/signaling');
+    // const socket = new SockJS('/signaling');
+    const socket = new SockJS('ws://meritz.store:7077/socket');
     stompClient = Stomp.over(socket);
     stompClient.debug = null;
 
@@ -119,14 +120,14 @@ const createPeerConnection = (otherKey) =>{
     const pc = new RTCPeerConnection(configuration);
     console.log(`Connection state: ${pc.connectionState}`);
     try {
-        if (localStream) {
-            localStream.getTracks().forEach(track => {
-                pc.addTrack(track, localStream);
-                console.log(`Track added: ${track.kind}`);
-            });
-        } else {
-            console.log("No local stream available");
-        }
+        // if (localStream) {
+        //     localStream.getTracks().forEach(track => {
+        //         pc.addTrack(track, localStream);
+        //         console.log(`Track added: ${track.kind}`);
+        //     });
+        // } else {
+        //     console.log("No local stream available");
+        // }
         pc.addEventListener('icecandidate', (event) =>{
             console.log("manager icecandidate start");
             onIceCandidate(event, otherKey);
