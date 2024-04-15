@@ -106,12 +106,16 @@ const connectSocket = async () =>{
 // };
 
 const createPeerConnection = (otherKey) =>{
-    const configuration = {
-        iceServers: [{
-            urls: "stun:stun.l.google.com:19302"
-        }]
+    const config = {
+        iceServers: [
+            {
+                urls: "turn:meritz:3478",
+                username: "meritz",
+                credential: "meritz"
+            }
+        ]
     };
-    const pc = new RTCPeerConnection(configuration);
+    const pc = new RTCPeerConnection(config);
     console.log(`Connection state: ${pc.connectionState}`);
     try {
         pc.addEventListener('icecandidate', (event) =>{
