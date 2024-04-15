@@ -104,7 +104,7 @@ function populateTable(rooms, tbody) {
             } else {
                 enterBtn.textContent = '열람';
             }
-            enterBtn.onclick = () => enterRoom(room.roomId);
+            enterBtn.onclick = () => enterRoom(room.roomId, room.status);
             row.insertCell(5).appendChild(enterBtn);
         });
     }
@@ -113,23 +113,28 @@ function populateTable(rooms, tbody) {
 
 
 
-function enterRoom(roomId) {
-    fetch(`/api/rooms/${roomId}`, {
-        method: 'PATCH', // PATCH 메서드 사용
-        headers: {
-            'Content-Type': 'application/json'
-        }
-        // 추가적인 데이터가 필요하다면, body를 추가하여 전송
-    }).then(response => {
-        if (response.ok) {
-            console.log('Room entered successfully');
-            window.location.href = `/manager.html/${roomId}`; // 성공 시 페이지 이동
-        } else {
-            console.error('Failed to enter room');
-        }
-    }).catch(error => {
-        console.error('Error entering room:', error);
-    });
+function enterRoom(roomId, roomStatus) {
+    if (roomStatus == '완료') {
+        window.location.href = `/record/${roomId}`
+    } else {
+        fetch(`/api/rooms/${roomId}`, {
+            method: 'PATCH', // PATCH 메서드 사용
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            // 추가적인 데이터가 필요하다면, body를 추가하여 전송
+        }).then(response => {
+            if (response.ok) {
+                console.log('Room entered successfully');
+                window.location.href = `/manager/${roomId}`; // 성공 시 페이지 이동
+            } else {
+                console.error('Failed to enter room');
+            }
+        }).catch(error => {
+            console.error('Error entering room:', error);
+        });
+    }
+
 }
 
 
