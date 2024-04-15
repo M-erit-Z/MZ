@@ -19,7 +19,7 @@ document.getElementById('accidentForm').addEventListener('submit', function(e) {
         .then(response => response.json())
         .then(data => {
             // 응답으로 받은 roomId를 사용하여 리다이렉트
-            window.location.href = `/client.html/${data}`;
+            window.location.href = `/client/${data}`;
         })
         .catch(error => console.error('Error:', error));
 });
