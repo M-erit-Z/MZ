@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    justify-content: space-around; /* 버튼들이 화면에 균등하게 분포 */
+    padding: 20px;
+    height: 100vh; /* 화면 전체 높이 사용 */
+    align-items: center; /* 세로 중앙 정렬 */
+}
+
+button {
+    width: 100%; /* 버튼의 너비를 컨테이너의 40%로 설정 */
+    height: 80%;
+    padding: 5%; /* 버튼 내부 패딩 */
+    font-size: 2em; /* 글자 크기를 2em으로 설정 */
+    cursor: pointer; /* 클릭 가능한 요소 표시 */
+    border: none;
+    border-radius: 10px; /* 버튼의 모서리를 둥글게 */
+    color: white;
+    transition: background-color 0.3s;
+}
+
+#clientEntry {
+    background-color: #ff4081; /* 고객 버튼 색상 */
+}
+
+#clientEntry:hover {
+    background-color: #c60055; /* 고객 버튼 호버 색상 */
+}
+
+#managerEntry {
+    background-color: #4096ff; /* 매니저 버튼 색상 */
+}
+
+#managerEntry:hover {
+    background-color: #4646f6; /* 매니저 버튼 호버 색상 */
+}
