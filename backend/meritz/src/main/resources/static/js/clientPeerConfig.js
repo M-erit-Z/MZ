@@ -91,20 +91,19 @@ const connectSocket = async () =>{
     });
 }
 
-let onTrack = (event, otherKey) => {
-
-    if(document.getElementById(`${otherKey}`) === null){
-        const video =  document.createElement('video');
-
-        video.autoplay = true;
-        video.controls = true;
-        video.id = otherKey;
-        video.srcObject = event.streams[0];
-
-        document.getElementById('remoteStreamDiv').appendChild(video);
-    }
-
-};
+// let onTrack = (event, otherKey) => {
+//
+//     if(document.getElementById(`${otherKey}`) === null){
+//         const video =  document.createElement('video');
+//
+//         video.autoplay = true;
+//         video.controls = true;
+//         video.id = otherKey;
+//         video.srcObject = event.streams[0];
+//
+//         document.getElementById('remoteStreamDiv').appendChild(video);
+//     }
+// };
 
 const createPeerConnection = (otherKey) =>{
     const configuration = {
@@ -119,9 +118,9 @@ const createPeerConnection = (otherKey) =>{
             console.log("client icecandidate start");
             onIceCandidate(event, otherKey);
         });
-        pc.addEventListener('track', (event) =>{
-            onTrack(event, otherKey);
-        });
+        // pc.addEventListener('track', (event) =>{
+        //     onTrack(event, otherKey);
+        // });
         if(localStream !== undefined){
             localStream.getTracks().forEach(track => {
                 pc.addTrack(track, localStream);
