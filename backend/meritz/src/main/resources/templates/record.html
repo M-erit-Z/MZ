@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>사고 상세 정보</title>
+    <link rel="stylesheet" th:href="@{/styles/record.css}">
+</head>
+<body>
+<div class="container">
+    <h1>사고 상세 정보</h1>
+    <div id="recordDetails">
+        <!-- 서버에서 정보를 받아와서 여기에 표시 -->
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const roomId = [[${roomId}]];
+    /*]]>*/
+</script>
+<script th:src="@{/js/record.js}"></script>
+</body>
+</html>
