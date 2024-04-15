@@ -22,8 +22,7 @@ const startCam = async () => {
 
 // 소켓 연결
 const connectSocket = async () =>{
-    // const socket = new SockJS('/signaling');
-    const socket = new SockJS('ws://meritz.store:7077/socket');
+    const socket = new SockJS('/signaling');
     stompClient = Stomp.over(socket);
     stompClient.debug = null;
 
