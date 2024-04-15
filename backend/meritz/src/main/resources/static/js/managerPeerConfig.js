@@ -120,7 +120,7 @@ const createPeerConnection = (otherKey) =>{
     const config = {
         iceServers: [
             {
-                urls: "turn:meritz:3478",
+                urls: "turn:meritz.store",
                 username: "meritz",
                 credential: "meritz"
             }
