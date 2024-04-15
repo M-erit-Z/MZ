@@ -6,14 +6,10 @@ import com.meritz.global.entity.BaseEntity;
 import java.time.LocalDateTime;
 
 import com.meritz.manager.entity.Manager;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.meritz.room.dto.SubmitRoomRequest;
+import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -23,19 +19,41 @@ import lombok.experimental.SuperBuilder;
 @Entity
 public class Room extends BaseEntity {
 
-    private long roomNumber;
-    private LocalDateTime accidentTime;
-    private String accidentLocation;
-    private String accidentContent;
+    private String location;
+    private String content;
+    private LocalDateTime occurTime;
+    @Enumerated(EnumType.STRING)
+    private RoomStatus status;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
-    @OneToOne(mappedBy = "room")
+
+    @OneToOne
+    @JoinColumn(name = "chat_id")
     private Chat chat;
+
+
+    @Transactional
+    public void updateStatus() {
+        if (this.status == RoomStatus.대기중) {
+            this.status = RoomStatus.처리중;
+        } else if (this.status == RoomStatus.처리중) {
+            this.status = RoomStatus.완료;
+        }
+    }
+
+    @Transactional
+    public void submit(SubmitRoomRequest in) {
+        this.occurTime = in.getOccurTime();
+        this.location = in.getLocation();
+        this.content = in.getContent();
+        this.updateStatus();
+    }
 }

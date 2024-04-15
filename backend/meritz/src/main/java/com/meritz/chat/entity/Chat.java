@@ -20,7 +20,6 @@ public class Chat extends BaseEntity {
 
     private String messages;
 
-    @OneToOne
-    @JoinColumn(name = "room_id")
+    @OneToOne(mappedBy = "")
     private Room room;
 }
