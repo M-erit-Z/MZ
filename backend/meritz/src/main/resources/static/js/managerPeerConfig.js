@@ -7,7 +7,7 @@ let localStream = undefined;
 
 const startCam = async () =>{
     if(navigator.mediaDevices !== undefined){
-        await navigator.mediaDevices.getUserMedia({ audio: true, video : true })
+        await navigator.mediaDevices.getUserMedia({ audio: true, video : false })
             .then(async (stream) => {
                 console.log('Stream found');
                 localStream = stream;
