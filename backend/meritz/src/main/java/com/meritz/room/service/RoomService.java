@@ -1,6 +1,5 @@
 package com.meritz.room.service;
 import com.meritz.client.entity.Client;
-import com.meritz.client.repository.ClientRepository;
 import com.meritz.manager.repository.ManagerRepository;
 import com.meritz.room.dto.CreateRoomRequest;
 import com.meritz.room.dto.GetRoomsResponse;
@@ -57,7 +56,8 @@ public class RoomService {
     public JoinRoomResponse join(Room room) {
         return JoinRoomResponse.builder()
                 .clientName(room.getClient().getClientName())
-                .phoneNumber(room.getClient().getPhoneNumber())
+                .clientPhone(room.getClient().getClientPhone())
+                .clientEmail(room.getClient().getClientEmail())
                 .createTime(room.getCreatedAt())
                 .location(room.getLocation())
                 .build();
@@ -78,6 +78,7 @@ public class RoomService {
                         .occurTime(room.getCreatedAt())
                         .managerName(room.getManager().getManagerName())
                         .status(room.getStatus())
+                        .previousStatus(RoomStatus.대기중)
                         .build());
 
         return HttpStatus.OK;
@@ -119,7 +120,8 @@ public class RoomService {
         return SubmitRoomRequest.builder()
                 .roomId(room.getId())
                 .clientName(room.getClient().getClientName())
-                .clientPhone(room.getClient().getPhoneNumber())
+                .clientPhone(room.getClient().getClientPhone())
+                .clientEmail(room.getClient().getClientEmail())
                 .occurTime(room.getOccurTime())
                 .location(room.getLocation())
                 .content(room.getContent())
