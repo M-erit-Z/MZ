@@ -1,10 +1,13 @@
 package com.meritz.client.service;
 
+import com.meritz.client.dto.ClientSignUpRequest;
 import com.meritz.client.entity.Client;
+import com.meritz.client.repository.ClientRepository;
 import com.meritz.room.dto.GetRoomsResponse;
 import com.meritz.room.entity.Room;
 import com.meritz.room.entity.RoomStatus;
 import com.meritz.room.repository.RoomRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 public class ClientService {
 
     private final RoomRepository roomRepository;
+    private final ClientRepository clientRepository;
 
     public Map<RoomStatus, List<GetRoomsResponse>> getAll(Client client) {
         List<Room> rooms = roomRepository.findByClient(client);
@@ -48,4 +52,14 @@ public class ClientService {
     }
 
 
+    @Transactional
+    public Object signUp(ClientSignUpRequest in) {
+        return clientRepository.save(
+                Client.builder()
+                        .clientName(in.getClientName())
+                        .clientPhone(in.getClientPhone())
+                        .clientEmail(in.getClientEmail())
+                        .build()
+        );
+    }
 }

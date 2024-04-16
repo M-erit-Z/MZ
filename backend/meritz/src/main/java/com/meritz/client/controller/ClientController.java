@@ -1,10 +1,9 @@
 package com.meritz.client.controller;
 
-import com.meritz.client.dto.GetClientRequest;
+import com.meritz.client.dto.ClientSignUpRequest;
 import com.meritz.client.entity.Client;
 import com.meritz.client.repository.ClientRepository;
 import com.meritz.client.service.ClientService;
-import com.meritz.room.entity.Room;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,6 +38,16 @@ public class ClientController {
             return ResponseEntity.ok(clientService.getAll(client.get()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client Not Found.");
+        }
+    }
+
+    @PostMapping("/api/clients/signup")
+    public ResponseEntity<?> signUp(@RequestBody ClientSignUpRequest in) {
+        Optional<Client> client = clientRepository.findByClientNameAndAndClientPhone(in.getClientName(), in.getClientPhone());
+        if (client.isEmpty()) {
+            return ResponseEntity.ok(clientService.signUp(in));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client Already Exists.");
         }
     }
 
