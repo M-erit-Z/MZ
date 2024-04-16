@@ -105,6 +105,19 @@ let onTrack = (event, otherKey) => {
         document.getElementById('remoteStreamDiv').appendChild(video);
     }
 
+    // if (event.track.kind === 'audio') {
+    //     // 오디오 요소 생성 및 설정
+    //     let audio = document.createElement('audio');
+    //     audio.autoplay = true;
+    //     audio.controls = true;
+    //     audio.id = `audio_${otherKey}`;  // 오디오 요소에 고유 ID 부여
+    //
+    //     // 스트림을 오디오 요소에 설정
+    //     audio.srcObject = new MediaStream([event.track]);
+    //
+    //     // 오디오 요소를 DOM에 추가
+    //     document.getElementById('remoteStreamDiv').appendChild(audio);
+    // }
 };
 
 const createPeerConnection = (otherKey) =>{
