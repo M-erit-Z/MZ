@@ -7,6 +7,7 @@ public class ChatDto {
 
     private Integer roomId;
     private String writerId;
-    private String detail;
+    private String messages;
+
 
 }

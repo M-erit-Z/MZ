@@ -5,23 +5,19 @@ let roomId;
 let otherKeyList = [];
 let localStream = undefined;
 
-const startCam = async () =>{
-    if(navigator.mediaDevices !== undefined){
-        await navigator.mediaDevices.getUserMedia({ audio: true, video : true })
+const startCam = async () => {
+    if (navigator.mediaDevices !== undefined) {
+        // 브라우저가 미디어 디바이스(카메라, 마이크 등)에 접근 가능한지 확인
+        await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: "environment" } })
             .then(async (stream) => {
                 console.log('Stream found');
-                //웹캠, 마이크의 스트림 정보를 글로벌 변수로 저장한다.
-                localStream = stream;
-                // Disable the microphone by default
-                stream.getAudioTracks()[0].enabled = true;
-                localStreamElement.srcObject = localStream;
-                // Connect after making sure that local stream is availble
-
+                localStream = stream;  // 스트림을 전역 변수에 저장
+                stream.getAudioTracks()[0].enabled = true;  // 오디오 트랙 활성화
+                localStreamElement.srcObject = localStream;  // 비디오 요소에 스트림 연결
             }).catch(error => {
-                console.error("Error accessing media devices:", error);
+                console.error("Error accessing media devices:", error);  // 에러 처리
             });
     }
-
 }
 
 // 소켓 연결
@@ -32,38 +28,45 @@ const connectSocket = async () =>{
 
     stompClient.connect({}, function () {
         console.log('Connected to WebRTC server');
+        console.log('0');
 
         //iceCandidate peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/iceCandidate/${myKey}/${roomId}`, candidate => {
             const key = JSON.parse(candidate.body).key
             const message = JSON.parse(candidate.body).body;
+            console.log("1");
 
             // 해당 key에 해당되는 peer 에 받은 정보를 addIceCandidate 해준다.
             pcListMap.get(key).addIceCandidate(new RTCIceCandidate({candidate:message.candidate,sdpMLineIndex:message.sdpMLineIndex,sdpMid:message.sdpMid}));
-
+            console.log("2");
         });
 
         //offer peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/offer/${myKey}/${roomId}`, offer => {
             const key = JSON.parse(offer.body).key;
             const message = JSON.parse(offer.body).body;
+            console.log("3");
 
             // 해당 key에 새로운 peerConnection 를 생성해준후 pcListMap 에 저장해준다.
             pcListMap.set(key,createPeerConnection(key));
+            console.log("4");
             // 생성한 peer 에 offer정보를 setRemoteDescription 해준다.
             pcListMap.get(key).setRemoteDescription(new RTCSessionDescription({type:message.type,sdp:message.sdp}));
+            console.log("5");
             //sendAnswer 함수를 호출해준다.
             sendAnswer(pcListMap.get(key), key);
-
+            console.log("6");
         });
 
         //answer peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/answer/${myKey}/${roomId}`, answer =>{
             const key = JSON.parse(answer.body).key;
             const message = JSON.parse(answer.body).body;
+            console.log("7");
 
             // 해당 key에 해당되는 Peer 에 받은 정보를 setRemoteDescription 해준다.
             pcListMap.get(key).setRemoteDescription(new RTCSessionDescription(message));
+            console.log("8");
 
         });
 
@@ -71,7 +74,7 @@ const connectSocket = async () =>{
         stompClient.subscribe(`/topic/call/key`, message =>{
             //자신의 key를 보내는 send
             stompClient.send(`/app/send/key`, {}, JSON.stringify(myKey));
-
+            console.log("9");
         });
 
         //상대방의 key를 받는 subscribe
@@ -82,60 +85,53 @@ const connectSocket = async () =>{
             if(myKey !== key && otherKeyList.find((mapKey) => mapKey === myKey) === undefined){
                 otherKeyList.push(key);
             }
+            console.log("10");
         });
 
     });
 }
 
 let onTrack = (event, otherKey) => {
-
-    if(document.getElementById(`${otherKey}`) === null){
-        const video =  document.createElement('video');
-
-        video.autoplay = true;
-        video.controls = true;
-        video.id = otherKey;
-        video.srcObject = event.streams[0];
-
-        document.getElementById('remoteStreamDiv').appendChild(video);
-    }
-
+    // if(document.getElementById(`${otherKey}`) === null){
+    //     const video =  document.createElement('video');
     //
-    // remoteStreamElement.srcObject = event.streams[0];
-    // remoteStreamElement.play();
+    //     video.autoplay = true;
+    //     video.controls = true;
+    //     video.id = otherKey;
+    //     video.srcObject = event.streams[0];
+    //
+    //     document.getElementById('remoteStreamDiv').appendChild(video);
+    // }
+    if (event.track.kind === 'audio') {
+        // 오디오 요소 생성 및 설정
+        let audio = document.createElement('audio');
+        audio.autoplay = true;
+        audio.controls = true;
+        audio.id = `audio_${otherKey}`;  // 오디오 요소에 고유 ID 부여
+
+        // 스트림을 오디오 요소에 설정
+        audio.srcObject = new MediaStream([event.track]);
+
+        // 오디오 요소를 DOM에 추가
+        document.getElementById('remoteStreamDiv').appendChild(audio);
+    }
 };
 
-// const createPeerConnection = (otherKey) =>{
-//     const pc = new RTCPeerConnection();
-//     try {
-//         pc.addEventListener('icecandidate', (event) =>{
-//             onIceCandidate(event, otherKey);
-//         });
-//         pc.addEventListener('track', (event) =>{
-//             onTrack(event, otherKey);
-//         });
-//         if(localStream !== undefined){
-//             localStream.getTracks().forEach(track => {
-//                 pc.addTrack(track, localStream);
-//             });
-//         }
-//
-//         console.log('PeerConnection created');
-//     } catch (error) {
-//         console.error('PeerConnection failed: ', error);
-//     }
-//     return pc;
-// }
-
-const createPeerConnection = (otherKey) => {
-    const configuration = {
-        iceServers: [{
-            urls: "stun:stun.l.google.com:19302"
-        }]
+const createPeerConnection = (otherKey) =>{
+    const config = {
+        iceServers: [
+            {
+                urls: "turn:meritz.store",
+                username: "meritz",
+                credential: "meritz"
+            }
+        ]
     };
-    const pc = new RTCPeerConnection(configuration);
+    const pc = new RTCPeerConnection(config);
+    console.log(`Connection state: ${pc.connectionState}`);
     try {
         pc.addEventListener('icecandidate', (event) =>{
+            console.log("client icecandidate start");
             onIceCandidate(event, otherKey);
         });
         pc.addEventListener('track', (event) =>{
@@ -218,8 +214,9 @@ document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
                 pcListMap.set(key, createPeerConnection(key));
                 sendOffer(pcListMap.get(key),key);
             }
-
         });
 
     },1000);
 });
+
+
