@@ -34,7 +34,13 @@ function addRoomToList(room) {
     row.insertCell(4).textContent = room.managerName;
 
     const enterBtn = document.createElement('button');
-    enterBtn.textContent = '입장';
+    if (room.status == '대기중') {
+        enterBtn.textContent = '입장';
+    } else if (room.status == '처리중') {
+        enterBtn.textContent = '재입장';
+    } else {
+        enterBtn.textContent = '열람';
+    }
     enterBtn.onclick = () => enterRoom(room.roomId);
     row.insertCell(5).appendChild(enterBtn);
 }
