@@ -105,9 +105,6 @@ let onTrack = (event, otherKey) => {
         document.getElementById('remoteStreamDiv').appendChild(video);
     }
 
-    //
-    // remoteStreamElement.srcObject = event.streams[0];
-    // remoteStreamElement.play();
 };
 
 const createPeerConnection = (otherKey) =>{
@@ -123,14 +120,6 @@ const createPeerConnection = (otherKey) =>{
     const pc = new RTCPeerConnection(config);
     console.log(`Connection state: ${pc.connectionState}`);
     try {
-        // if (localStream) {
-        //     localStream.getTracks().forEach(track => {
-        //         pc.addTrack(track, localStream);
-        //         console.log(`Track added: ${track.kind}`);
-        //     });
-        // } else {
-        //     console.log("No local stream available");
-        // }
         pc.addEventListener('icecandidate', (event) =>{
             console.log("manager icecandidate start");
             onIceCandidate(event, otherKey);
@@ -139,12 +128,12 @@ const createPeerConnection = (otherKey) =>{
             onTrack(event, otherKey);
         });
         if(localStream !== undefined){
-            localStream.getAudioTracks().forEach(track => {
-                pc.addTrack(track, localStream);
-            });
-            // localStream.getTracks().forEach(track => {
+            // localStream.getAudioTracks().forEach(track => {
             //     pc.addTrack(track, localStream);
             // });
+            localStream.getTracks().forEach(track => {
+                pc.addTrack(track, localStream);
+            });
         }
         console.log('PeerConnection created');
     } catch (error) {
