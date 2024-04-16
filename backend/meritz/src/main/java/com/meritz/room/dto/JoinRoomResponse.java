@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @Builder
 public class JoinRoomResponse {
     private String clientName;
-    private String phoneNumber;
+    private String clientPhone;
+    private String clientEmail;
     private LocalDateTime createTime;
     private String location;
 }
