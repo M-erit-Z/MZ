@@ -4,6 +4,8 @@ let pcListMap = new Map();
 let roomId;
 let otherKeyList = [];
 let localStream = undefined;
+const messages = [];
+let chatClient = null;
 
 const startCam = async () =>{
     if(navigator.mediaDevices !== undefined){
@@ -18,6 +20,22 @@ const startCam = async () =>{
                 console.error("Error accessing media devices:", error);
             });
     }
+}
+
+// 채팅용 소켓 연결
+const connectChat = async () => {
+    const chatSocket = new SockJS('/signaling');
+    chatClient = Stomp.over(chatSocket);
+
+    chatClient.connect({}, function(frame) {
+        console.log('Connected as manger');
+        chatClient.subscribe(`/topic/${roomId}`, function(message) {
+            const receivedMessage = JSON.parse(message.body);
+            messages.push(receivedMessage);
+            displayMessages();
+        });
+    });
+    document.getElementById('message-input').addEventListener('keydown', handleKeyDown);
 }
 
 // 소켓 연결
@@ -46,17 +64,16 @@ const connectSocket = async () =>{
         stompClient.subscribe(`/topic/peer/offer/${myKey}/${roomId}`, offer => {
             const key = JSON.parse(offer.body).key;
             const message = JSON.parse(offer.body).body;
-            console.log("3");
 
             // 해당 key에 새로운 peerConnection 를 생성해준후 pcListMap 에 저장해준다.
             pcListMap.set(key,createPeerConnection(key));
-            console.log("4");
+
             // 생성한 peer 에 offer정보를 setRemoteDescription 해준다.
             pcListMap.get(key).setRemoteDescription(new RTCSessionDescription({type:message.type,sdp:message.sdp}));
-            console.log("5");
+
             //sendAnswer 함수를 호출해준다.
             sendAnswer(pcListMap.get(key), key);
-            console.log("6");
+
         });
 
         //answer peer 교환을 위한 subscribe
@@ -104,34 +121,18 @@ let onTrack = (event, otherKey) => {
 
         document.getElementById('remoteStreamDiv').appendChild(video);
     }
-
-    // if (event.track.kind === 'audio') {
-    //     // 오디오 요소 생성 및 설정
-    //     let audio = document.createElement('audio');
-    //     audio.autoplay = true;
-    //     audio.controls = true;
-    //     audio.id = `audio_${otherKey}`;  // 오디오 요소에 고유 ID 부여
-    //
-    //     // 스트림을 오디오 요소에 설정
-    //     audio.srcObject = new MediaStream([event.track]);
-    //
-    //     // 오디오 요소를 DOM에 추가
-    //     document.getElementById('remoteStreamDiv').appendChild(audio);
-    // }
 };
 
 const createPeerConnection = (otherKey) =>{
     const config = {
         iceServers: [
             {
-                urls: "turn:meritz.store",
-                username: "meritz",
-                credential: "meritz"
+                urls: "turn:meritz.store", username: "meritz", credential: "meritz"
             }
         ]
     };
     const pc = new RTCPeerConnection(config);
-    console.log(`Connection state: ${pc.connectionState}`);
+
     try {
         pc.addEventListener('icecandidate', (event) =>{
             console.log("manager icecandidate start");
@@ -141,9 +142,6 @@ const createPeerConnection = (otherKey) =>{
             onTrack(event, otherKey);
         });
         if(localStream !== undefined){
-            // localStream.getAudioTracks().forEach(track => {
-            //     pc.addTrack(track, localStream);
-            // });
             localStream.getTracks().forEach(track => {
                 pc.addTrack(track, localStream);
             });
@@ -206,6 +204,7 @@ document.querySelector('#enterRoomBtn').addEventListener('click', async () =>{
     document.querySelector('#enterRoomBtn').disabled = true;
 
     await connectSocket();
+    await connectChat();
 });
 
 // 스트림 버튼 클릭시 , 다른 웹 key들 웹소켓을 가져 온뒤에 offer -> answer -> iceCandidate 통신
@@ -225,3 +224,39 @@ document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
 
     },1000);
 });
+
+function sendMessage() {
+    const newMessage = document.getElementById('message-input').value;
+    if (newMessage && chatClient && chatClient.connected) {
+        const chatMessage = {
+            writerId: 'manager',
+            messages: newMessage
+        };
+
+        chatClient.send(`/app/chat/sendMessage/${roomId}`, {}, JSON.stringify(chatMessage));
+        document.getElementById('message-input').value = ''; // 메시지 입력란 초기화
+    }
+}
+
+function handleKeyDown(event) {
+    if (event.key === 'Enter') {
+        if (!event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+}
+
+function displayMessages() {
+    const messageList = document.getElementById('message-list');
+    messageList.innerHTML = '';
+    messages.forEach((message, index) => {
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${message.writerId === 'manager' ? 'sent' : 'received'}`;
+        const contentElement = document.createElement('div');
+        contentElement.className = 'message-content';
+        contentElement.textContent = message.messages;
+        messageElement.appendChild(contentElement);
+        messageList.appendChild(messageElement);
+    });
+}
