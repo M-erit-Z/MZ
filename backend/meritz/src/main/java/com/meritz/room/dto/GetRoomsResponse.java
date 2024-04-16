@@ -15,4 +15,5 @@ public class GetRoomsResponse {
     private LocalDateTime occurTime;
     private String managerName;
     private RoomStatus status;
+    private RoomStatus previousStatus;
 }
