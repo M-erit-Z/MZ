@@ -32,6 +32,14 @@
         <button onclick="sendScript('OOO은 하지마시길 바랍니다')">하면 안돼요</button>
         <button onclick="sendScript('OOO을 하시길 바랍니다.')">이렇게 하세요</button>
     </div>
+    <div id="chat-container" class="chat-container">
+        <div id="message-list"></div>
+        <textarea id="message-input" class="message-input" placeholder="Type a message... (Shift+Enter for new line)" rows="4"></textarea>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs"></script>
+    <script src="js/managerchat.js"></script>
 </div>
 <div class="form-section">
     <h2>사고 경위서 작성</h2>
