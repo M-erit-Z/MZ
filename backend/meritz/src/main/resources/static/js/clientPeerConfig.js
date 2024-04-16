@@ -4,6 +4,8 @@ let pcListMap = new Map();
 let roomId;
 let otherKeyList = [];
 let localStream = undefined;
+const messages = [];
+let chatClient = null;
 
 const startCam = async () => {
     if (navigator.mediaDevices !== undefined) {
@@ -20,6 +22,23 @@ const startCam = async () => {
     }
 }
 
+// 채팅용 소켓 연결
+const connectChat = async () => {
+    const chatSocket = new SockJS('/signaling');
+    chatClient = Stomp.over(chatSocket);
+
+    chatClient.connect({}, function(frame) {
+        console.log('Connected as client');
+        chatClient.subscribe(`/topic/${roomId}`, function(message) {
+            const receivedMessage = JSON.parse(message.body);
+            messages.push(receivedMessage);
+            displayMessages();
+        });
+    });
+    document.getElementById('message-input').addEventListener('keydown', handleKeyDown);
+}
+
+
 // 소켓 연결
 const connectSocket = async () =>{
     const socket = new SockJS('/signaling');
@@ -28,13 +47,11 @@ const connectSocket = async () =>{
 
     stompClient.connect({}, function () {
         console.log('Connected to WebRTC server');
-        console.log('0');
 
         //iceCandidate peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/iceCandidate/${myKey}/${roomId}`, candidate => {
             const key = JSON.parse(candidate.body).key
             const message = JSON.parse(candidate.body).body;
-            console.log("1");
 
             // 해당 key에 해당되는 peer 에 받은 정보를 addIceCandidate 해준다.
             pcListMap.get(key).addIceCandidate(new RTCIceCandidate({candidate:message.candidate,sdpMLineIndex:message.sdpMLineIndex,sdpMid:message.sdpMid}));
@@ -62,12 +79,9 @@ const connectSocket = async () =>{
         stompClient.subscribe(`/topic/peer/answer/${myKey}/${roomId}`, answer =>{
             const key = JSON.parse(answer.body).key;
             const message = JSON.parse(answer.body).body;
-            console.log("7");
 
             // 해당 key에 해당되는 Peer 에 받은 정보를 setRemoteDescription 해준다.
             pcListMap.get(key).setRemoteDescription(new RTCSessionDescription(message));
-            console.log("8");
-
         });
 
         //key를 보내라는 신호를 받은 subscribe
@@ -92,16 +106,6 @@ const connectSocket = async () =>{
 }
 
 let onTrack = (event, otherKey) => {
-    // if(document.getElementById(`${otherKey}`) === null){
-    //     const video =  document.createElement('video');
-    //
-    //     video.autoplay = true;
-    //     video.controls = true;
-    //     video.id = otherKey;
-    //     video.srcObject = event.streams[0];
-    //
-    //     document.getElementById('remoteStreamDiv').appendChild(video);
-    // }
     if (event.track.kind === 'audio') {
         // 오디오 요소 생성 및 설정
         let audio = document.createElement('audio');
@@ -121,14 +125,12 @@ const createPeerConnection = (otherKey) =>{
     const config = {
         iceServers: [
             {
-                urls: "turn:meritz.store",
-                username: "meritz",
-                credential: "meritz"
+                urls: "turn:meritz.store", username: "meritz", credential: "meritz"
             }
         ]
     };
     const pc = new RTCPeerConnection(config);
-    console.log(`Connection state: ${pc.connectionState}`);
+
     try {
         pc.addEventListener('icecandidate', (event) =>{
             console.log("client icecandidate start");
@@ -200,23 +202,60 @@ document.querySelector('#enterRoomBtn').addEventListener('click', async () =>{
     document.querySelector('#enterRoomBtn').disabled = true;
 
     await connectSocket();
+    await connectChat();
 });
 
 // 스트림 버튼 클릭시 , 다른 웹 key들 웹소켓을 가져 온뒤에 offer -> answer -> iceCandidate 통신
 // peer 커넥션은 pcListMap 으로 저장
-document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
-    await stompClient.send(`/app/call/key`, {}, {});
+// document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
+//     await stompClient.send(`/app/call/key`, {}, {});
+//
+//     setTimeout(() =>{
+//
+//         otherKeyList.map((key) =>{
+//             if(!pcListMap.has(key)){
+//                 pcListMap.set(key, createPeerConnection(key));
+//                 sendOffer(pcListMap.get(key),key);
+//             }
+//         });
+//
+//     },1000);
+// });
 
-    setTimeout(() =>{
-
-        otherKeyList.map((key) =>{
-            if(!pcListMap.has(key)){
-                pcListMap.set(key, createPeerConnection(key));
-                sendOffer(pcListMap.get(key),key);
-            }
-        });
-
-    },1000);
-});
 
 
+function sendMessage() {
+    const newMessage = document.getElementById('message-input').value;
+    if (newMessage && chatClient && chatClient.connected) {
+        const chatMessage = {
+            writerId: 'client',
+            messages: newMessage
+        };
+
+        chatClient.send(`/app/chat/sendMessage/${roomId}`, {}, JSON.stringify(chatMessage));
+        document.getElementById('message-input').value = ''; // 메시지 입력란 초기화
+    }
+}
+
+function handleKeyDown(event) {
+    if (event.key === 'Enter') {
+        if (!event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+}
+
+function displayMessages() {
+    const messageList = document.getElementById('message-list');
+    messageList.innerHTML = '';
+    messages.forEach((message, index) => {
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${message.writerId === 'client' ? 'sent' : 'received'}`;
+        const contentElement = document.createElement('div');
+        contentElement.className = 'message-content';
+        contentElement.textContent = message.messages;
+        messageElement.appendChild(contentElement);
+        messageList.appendChild(messageElement);
+    });
+}

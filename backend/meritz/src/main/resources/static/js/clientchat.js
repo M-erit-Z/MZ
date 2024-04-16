@@ -7,7 +7,7 @@ window.onload = function() {
 
     stompClient.connect({}, function(frame) {
         console.log('Connected as client');
-        stompClient.subscribe('/topic/public', function(message) {
+        stompClient.subscribe(`/topic/${roomId}`, function(message) {
             const receivedMessage = JSON.parse(message.body);
             messages.push(receivedMessage);
             displayMessages();
