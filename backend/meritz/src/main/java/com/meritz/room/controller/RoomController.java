@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -41,7 +40,7 @@ public class RoomController {
 
     @PostMapping("/api/rooms")
     public ResponseEntity<?> create(@RequestBody CreateRoomRequest in) {
-        Optional<Client> findClient = clientRepository.findByClientNameAndAndPhoneNumber(in.getClientName(), in.getPhoneNumber());
+        Optional<Client> findClient = clientRepository.findByClientNameAndAndClientPhone(in.getClientName(), in.getClientPhone());
         if (findClient.isPresent()) {
             return ResponseEntity.ok((roomService.create(findClient.get(), in)));
         } else {
