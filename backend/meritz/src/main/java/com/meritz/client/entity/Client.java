@@ -20,7 +20,9 @@ import java.util.List;
 public class Client extends BaseEntity {
 
     private String clientName;
-    private String phoneNumber;
+    private String clientPhone;
+    private String clientEmail;
+
 
     @OneToMany(mappedBy = "client")
     private List<Room> rooms;
