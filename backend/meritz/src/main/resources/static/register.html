@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>사고 접수</title>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a8904bab80bc416a402ca9544df9d812&libraries=services"></script>
     <link rel="stylesheet" href="/styles/register.css">
 </head>
 <body>
 <div class="form-container">
     <form id="accidentForm">
         <input type="text" id="clientName" placeholder="고객명" required>
-        <input type="tel" id="phoneNumber" placeholder="고객번호" required>
+        <input type="tel" id="clientPhone" placeholder="고객번호" required>
         <input type="text" id="location" placeholder="사고위치" required>
-        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a8904bab80bc416a402ca9544df9d812&libraries=services"></script>
         <button type="button" id="locateButton">현재 위치</button>
-
+        <button type="button" id="beforeButton">사고 기록</button>
         <button type="submit">사고 접수</button>
     </form>
 </div>
