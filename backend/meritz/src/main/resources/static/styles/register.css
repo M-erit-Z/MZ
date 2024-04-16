@@ -59,7 +59,7 @@ button:hover {
     background-color: #0b9413;
 }
 
-#beforeButton {
+#historyButton {
     padding: 8px 12px;
     background-color: #4096ff;
     color: white;
@@ -69,7 +69,7 @@ button:hover {
     margin-top: 10px;
 }
 
-#beforeButton:hover {
+#historyButton:hover {
     background-color: #388ef8;
 }
 

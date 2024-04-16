@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>고객 사고 이력</title>
+    <link rel="stylesheet" th:href="@{/styles/history.css}">
+</head>
+<body>
+<div id="roomListContainer">
+    <h1>고객 사고 이력</h1>
+    <table id="waitRoomList">
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>고객명</th>
+            <th>사고 위치</th>
+            <th>사고 시각</th>
+            <th>담당자</th>
+            <th>재입장</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 방 목록이 여기에 삽입됩니다 -->
+        </tbody>
+    </table>
+    <table id="processRoomList">
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>고객명</th>
+            <th>사고 위치</th>
+            <th>사고 시각</th>
+            <th>담당자</th>
+            <th>재입장</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 방 목록이 여기에 삽입됩니다 -->
+        </tbody>
+    </table>
+    <table id="completeRoomList">
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>고객명</th>
+            <th>사고 위치</th>
+            <th>사고 시각</th>
+            <th>담당자</th>
+            <th>열람</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 방 목록이 여기에 삽입됩니다 -->
+        </tbody>
+    </table>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const clientId = [[${clientId}]];
+    /*]]>*/
+</script>
+<script th:src="@{/js/history.js}"></script>
+</body>
+</html>

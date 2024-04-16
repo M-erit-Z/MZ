@@ -25,7 +25,13 @@ public class ThymeleafController {
 
     @GetMapping("/record/{roomId}")
     public String recordPage(@PathVariable("roomId") Long roomId, Model model) {
-        model.addAttribute("roomId : ", roomId);
+        model.addAttribute("roomId", roomId);
         return "record";
+    }
+
+    @GetMapping("/history/{clientId}")
+    public String historyPage(@PathVariable("clientId") Long clientId, Model model) {
+        model.addAttribute("clientId", clientId);
+        return "history";
     }
 }
