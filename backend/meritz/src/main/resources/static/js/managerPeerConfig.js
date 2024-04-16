@@ -111,12 +111,6 @@ let onTrack = (event, otherKey) => {
 };
 
 const createPeerConnection = (otherKey) =>{
-    // const configuration = {
-    //     iceServers: [{
-    //         urls: "stun:stun.l.google.com:19302"
-    //     }]
-    // };
-    // const pc = new RTCPeerConnection(configuration);
     const config = {
         iceServers: [
             {
@@ -145,9 +139,12 @@ const createPeerConnection = (otherKey) =>{
             onTrack(event, otherKey);
         });
         if(localStream !== undefined){
-            localStream.getTracks().forEach(track => {
+            localStream.getAudioTracks().forEach(track => {
                 pc.addTrack(track, localStream);
             });
+            // localStream.getTracks().forEach(track => {
+            //     pc.addTrack(track, localStream);
+            // });
         }
         console.log('PeerConnection created');
     } catch (error) {
