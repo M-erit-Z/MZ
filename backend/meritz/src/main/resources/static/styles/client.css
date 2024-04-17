@@ -1,0 +1,69 @@
+/* 기본 스타일 */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 비디오 스트림 스타일 */
+#localStream {
+    width: 100%; /* 화면 너비를 꽉 채움 */
+    max-height: 70vh; /* 높이는 화면의 70%를 넘지 않도록 설정 */
+}
+
+/* 컨트롤 버튼 스타일 */
+.controls {
+    display: flex;
+    justify-content: space-around; /* 버튼 사이에 공간을 균일하게 배분 */
+    width: 100%; /* 부모 요소의 너비와 동일하게 설정 */
+    padding: 10px 0; /* 상하 패딩만 추가 */
+}
+
+button {
+    flex: 1; /* 모든 버튼이 동일한 크기로 확장 */
+    margin: 0 5px; /* 버튼 사이의 간격 */
+    padding: 10px 0; /* 패딩으로 버튼 높이 조절 */
+    background-color: #007BFF; /* 부트스트랩 파란색 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px; /* 적당한 텍스트 크기 */
+}
+
+button:hover {
+    background-color: #0056b3; /* 호버 시 색상 변경 */
+}
+
+/* 채팅 컨테이너 스타일 */
+.chat-container {
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 10px;
+}
+
+#message-list {
+    height: 50vh;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+#message-input {
+    width: calc(100% - 20px); /* 계산된 너비 */
+    margin: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button[onclick="sendMessage()"] {
+    width: calc(100% - 20px);
+    margin: 10px;
+    padding: 10px;
+    background-color: #28a745; /* 부트스트랩 녹색 */
+    color: white;
+}

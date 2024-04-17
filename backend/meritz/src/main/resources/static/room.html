@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방 목록</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="/styles/room.css">
+</head>
+<body>
+<div id="roomListContainer">
+    <table id="waitRoomList">
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>고객명</th>
+            <th>사고 위치</th>
+            <th>사고 시각</th>
+            <th>담당자</th>
+            <th>입장</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 방 목록이 여기에 삽입됩니다 -->
+        </tbody>
+    </table>
+    <table id="processRoomList">
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>고객명</th>
+            <th>사고 위치</th>
+            <th>사고 시각</th>
+            <th>담당자</th>
+            <th>재입장</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 방 목록이 여기에 삽입됩니다 -->
+        </tbody>
+    </table>
+    <table id="completeRoomList">
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>고객명</th>
+            <th>사고 위치</th>
+            <th>사고 시각</th>
+            <th>담당자</th>
+            <th>열람</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 방 목록이 여기에 삽입됩니다 -->
+        </tbody>
+    </table>
+</div>
+<script src="/js/room.js"></script>
+</body>
+</html>

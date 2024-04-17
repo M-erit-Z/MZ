@@ -1,0 +1,66 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #eef7fa; /* 매우 연한 하늘색 */
+}
+
+#roomListContainer {
+    max-width: 800px;
+    margin: auto;
+    background: #ffffff; /* 흰색 배경 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #b2ebf2; /* 하늘색 선 */
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #b4e5ff; /* 진한 하늘색 */
+    color: black;
+}
+
+button {
+    padding: 5px 10px;
+    background-color: #29b6f6; /* 쨍한 하늘색 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #039be5; /* 더 진한 하늘색 */
+}
+
+/* 추가된 스타일 */
+#waitRoomList th {
+    background-color: #b4e5ff; /* 유지된 진한 하늘색 */
+}
+
+#processRoomList th {
+    background-color: #fff17a; /* 밝은 노랑색 */
+}
+
+#processRoomList td {
+    border-color: #ffee60; /* 노랑색 선 */
+}
+
+#completeRoomList th {
+    background-color: #ff855e; /* 밝은 빨강색 */
+}
+
+#completeRoomList td {
+    border-color: #ff7249; /* 빨강색 선 */
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객 화면</title>
+
+    <!-- 웹소캣 연결에 필요한 라이브러리 선언 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs"></script>
+    <link rel="stylesheet" th:href="@{/styles/client.css}">
+</head>
+<body>
+
+<video id="localStream" autoplay playsinline controls style="display: none;"></video>
+    <!-- 영상 송출 화면 -->
+<!--<div class="video-section" id="remoteStreamDiv"></div>-->
+
+<div class="controls">
+    <button onclick="toggleCamera()">카메라 전환</button>
+    <button onclick="shareLocation()">위치 공유</button>
+    <button onclick="endCall()">종료</button>
+</div>
+<div id="chat-container" class="chat-container">
+    <div id="message-list"></div>
+    <textarea id="message-input" class="message-input" placeholder="Type a message... (Shift+Enter for new line)" rows="4"></textarea>
+    <button onclick="sendMessage()">Send</button>
+</div>
+<script th:inline="javascript">
+    const roomId = [[${roomId}]];
+</script>
+<script th:src="@{/js/clientPeerConfig.js}"></script>
+</body>
+</html>
