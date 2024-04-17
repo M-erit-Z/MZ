@@ -238,6 +238,52 @@ document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
     },1000);
 });
 
+let mediaRecorder;
+let recordedChunks = [];
+
+// 영상녹화
+document.getElementById('startRecording').addEventListener('click', function() {
+    startRecording();
+});
+
+document.getElementById('stopRecording').addEventListener('click', function() {
+    stopRecording();
+});
+
+function startRecording() {
+    const stream = document.querySelector('#remoteStreamDiv video').srcObject;
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+    mediaRecorder.ondataavailable = function(event) {
+        if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+        }
+    };
+    mediaRecorder.start(10); // 10ms 단위로 데이터 저장
+    document.getElementById('stopRecording').disabled = false;
+}
+
+function stopRecording() {
+    mediaRecorder.stop();
+    saveVideo();
+    document.getElementById('stopRecording').disabled = true;
+}
+
+function saveVideo() {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'recorded.webm';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
+}
+
+
 function sendMessage() {
     const newMessage = document.getElementById('message-input').value;
     if (newMessage && chatClient && chatClient.connected) {
@@ -248,6 +294,17 @@ function sendMessage() {
 
         chatClient.send(`/app/chat/sendMessage/${roomId}`, {}, JSON.stringify(chatMessage));
         document.getElementById('message-input').value = ''; // 메시지 입력란 초기화
+    }
+}
+
+function sendScript(message) {
+    if (message && chatClient && chatClient.connected) {
+        const chatMessage = {
+            writerId: 'manager',
+            messages: message
+        };
+
+        chatClient.send(`/app/chat/sendMessage/${roomId}`, {}, JSON.stringify(chatMessage));
     }
 }
 
@@ -309,3 +366,4 @@ document.getElementById('endRecord').addEventListener('click', function(event) {
             console.error('Error:', error);
         });
 });
+

@@ -1,66 +1,65 @@
-body {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 왼쪽에 영상 및 대화 관련 요소, 오른쪽에 폼 */
-    grid-template-rows: 1fr 0.6fr auto; /* 영상, 대화 기록 및 입력, 버튼 */
-    gap: 20px;
-    height: 100vh;
-    margin: 0;
+.dashboard {
+    display: flex;
+    justify-content: space-between;
     padding: 20px;
-    font-family: Arial, sans-serif;
 }
 
-.video-section2 {
-    width: 1px;
-    height: auto;
-    border: 1px solid black;
+.left-section, .right-section {
+    flex: 1;
+    padding: 10px;
+    margin: 10px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .video-section {
-    grid-row: 1 / 2;
-    border: 1px solid #ccc;
-    background-color: #000;
+    width: 500px;
+    height: 300px;
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#video {
+    width: 300px;
+    height: 150px;
 }
 
 .chat-history {
-    grid-row: 2 / 3;
-    overflow-y: auto;
+    height: 200px;
+    overflow-y: scroll;
     border: 1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 20px;
 }
 
 .input-and-buttons {
-    grid-row: 3 / 4;
-    display: grid;
-    grid-template-rows: auto auto;
-    gap: 10px;
-}
-
-.custom-script-section {
     display: flex;
+    flex-direction: column;
 }
 
 .script-buttons {
     display: flex;
-    overflow-x: auto;
-    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 10px;
 }
 
-.form-section {
-    grid-column: 2 / 3;
-    grid-row: 1 / 4;
-    border: 1px solid #ccc;
-    overflow-y: auto;
-}
-
-video, .chat-history, .custom-script-section, .script-buttons, .form-section {
-    padding: 10px;
-}
-
-.custom-script-section input {
+.message-input {
     flex-grow: 1;
     margin-right: 10px;
 }
 
-#incidentDetails {
+.form-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+#content {
     width: 100%; /* 폼의 너비에 맞춰서 가로 크기를 조정 */
     min-height: 400px; /* 기본 높이 설정 */
     padding: 10px; /* 내부 여백 추가 */

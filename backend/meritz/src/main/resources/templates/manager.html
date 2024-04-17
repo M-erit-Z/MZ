@@ -3,91 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>관리자 대시보드</title>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <link rel="stylesheet" th:href="@{/styles/manager.css}">
 </head>
-
 <body>
-<div>
-    <input type="number" id="roomIdInput" placeholder="방 번호 입력"/>
-    <!-- 룸 아이디를 입력후 클릭하는 button -->
-    <button type="button" id="enterRoomBtn">enter Room</button>
-    <button type="button" id="startSteamBtn" >상담 시작</button>
-<!--     enterRoomBtn 클릭시 나타남, Streams 정보를 담은 Peer 를 웹소켓 ( 시그널링 )   -->
-</div>
-<div class="video-section" id="remoteStreamDiv">
-</div>
-<div class="chat-history" id="chatHistoßry">
-    <!-- 대화 기록이 표시됩니다 -->
-</div>
-<div class="input-and-buttons">
-    <div class="custom-script-section">
-        <input type="text" id="customScript" placeholder="직접 입력">
-        <button onclick="sendCustomScript()">보내기</button>
+<div class="dashboard">
+    <div class="left-section">
+        <button type="button" id="startSteamBtn">상담 시작</button>
+        <div class="video-section" id="remoteStreamDiv"></div>
+        <div>
+            <button id="startRecording">녹화 시작</button>
+            <button id="stopRecording" disabled>녹화 종료</button>
+        </div>
+        <div id="chat-chatHistory" class="chat-history">
+            <div id="message-list"></div>
+        </div>
+        <div class="input-and-buttons">
+            <div class="script-buttons">
+                <button onclick="sendScript('안녕하세요, 고객님. 사건접수 시작합니다.')">인사</button>
+                <button onclick="sendScript('현장확인을 위해 카메라로 OOO를 비춰주세요.')">정보 요청</button>
+                <button onclick="sendScript('OOO은 하지마시길 바랍니다')">하면 안돼요</button>
+                <button onclick="sendScript('OOO을 하시길 바랍니다.')">이렇게 하세요</button>
+            </div>
+            <textarea id="message-input" class="message-input" placeholder="Type a message... (Shift+Enter for new line)" rows="4"></textarea>
+            <button onclick="sendMessage()">Send</button>
+        </div>
     </div>
-    <div class="script-buttons">
-        <button onclick="sendScript('안녕하세요, 고객님. 사건접수 시작합니다.')">인사</button>
-        <button onclick="sendScript('현장확인을 위해 카메라로 OOO를 비춰주세요.')">정보 요청</button>
-        <button onclick="sendScript('OOO은 하지마시길 바랍니다')">하면 안돼요</button>
-        <button onclick="sendScript('OOO을 하시길 바랍니다.')">이렇게 하세요</button>
+    <div class="right-section">
+        <div class="form-section">
+            <h2>사고 경위서 작성</h2>
+            <form id="reportForm">
+                <label for="clientName">고객명:</label><br>
+                <input type="text" id="clientName" name="clientName"><br>
+                <label for="clientPhone">전화번호:</label><br>
+                <input type="tel" id="clientPhone" name="clientPhone"><br>
+                <label for="occurTime">사고시간:</label><br>
+                <input type="datetime-local" id="occurTime" name="occurTime"><br>
+                <label for="location">사고장소:</label><br>
+                <input type="text" id="location" name="location"><br>
+                <label for="content">사고내용:</label><br>
+                <textarea id="content" name="content" placeholder="사고에 대한 상세 내용을 입력하세요..."></textarea><br>
+                <button type="submit" id="endRecord">제출</button>
+            </form>
+        </div>
     </div>
-    <div id="chat-container" class="chat-container">
-        <div id="message-list"></div>
-        <textarea id="message-input" class="message-input" placeholder="Type a message... (Shift+Enter for new line)" rows="4"></textarea>
-        <button onclick="sendMessage()">Send</button>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs"></script>
-</div>
-<div class="form-section">
-    <h2>사고 경위서 작성</h2>
-    <!-- 폼 내용 -->
-    <form id="reportForm">
-        <label for="clientName">고객명:</label><br>
-        <input type="text" id="clientName" name="clientName"><br>
-
-        <label for="clientPhone">전화번호:</label><br>
-        <input type="tel" id="clientPhone" name="clientPhone"><br>
-
-        <label for="occurTime">사고시간:</label><br>
-        <input type="datetime-local" id="occurTime" name="occurTime"><br>
-
-        <label for="location">사고장소:</label><br>
-        <input type="text" id="location" name="location"><br>
-
-        <label for="content">사고내용:</label><br>
-        <textarea id="content" name="content" placeholder="사고에 대한 상세 내용을 입력하세요..."></textarea><br>
-
-
-        <button type="submit" id="endRecord">제출</button>
-    </form>
 </div>
 <script th:inline="javascript">
     const roomId = [[${roomId}]];
 </script>
 <script th:src="@{/js/managerPeerConfig.js}"></script>
-<script>
-    function sendScript(message) {
-        // 스크립트 전송 로직
-        updateChatHistory('관리자', message);
-    }
-
-    function sendCustomScript() {
-        const message = document.getElementById('customScript').value;
-        if (message) {
-            updateChatHistory('관리자', message);
-            document.getElementById('customScript').value = ''; // 입력 필드 초기화
-        }
-    }
-
-    function updateChatHistory(sender, message) {
-        const chatHistory = document.getElementById('chatHistory');
-        const entry = document.createElement('p');
-        entry.textContent = `${sender}: ${message}`;
-        chatHistory.appendChild(entry);
-    }
-</script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs"></script>
 </body>
 </html>
