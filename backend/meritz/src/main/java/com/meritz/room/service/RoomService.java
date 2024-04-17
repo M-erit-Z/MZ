@@ -112,8 +112,6 @@ public class RoomService {
     }
 
     public HttpStatus submit(Room room, SubmitRoomRequest in) {
-        // 이메일 보내기
-        emailService.sendEmail(in.getClientEmail(),"Meritz 사고 내용",  in.getContent()+"내용입니다.");
         room.submit(in);
         roomRepository.save(room);
 
@@ -134,7 +132,9 @@ public class RoomService {
                         .build());
 
         // Email 보내기
-        emailService.sendEmail(in.getClientEmail(), "사고 내역", in.getContent()+"이상입니다.");
+        StringBuilder content = new StringBuilder();
+        content.append(in.getContent()).append("\n").append("\n").append("이상 매니저 ").append(room.getManager().getManagerName()).append("이었습니다.").append("감사합니다.");
+        emailService.sendEmail(in.getClientEmail(), in.getClientName(), in.getRoomId(), content);
         return HttpStatus.OK;
     }
 
