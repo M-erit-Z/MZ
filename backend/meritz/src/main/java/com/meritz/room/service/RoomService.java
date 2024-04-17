@@ -115,6 +115,35 @@ public class RoomService {
     public HttpStatus submit(Room room, SubmitRoomRequest in) {
         room.submit(in);
         roomRepository.save(room);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        roomRepository.save(room);
+        messagingTemplate.convertAndSend("/topic/rooms",
+                GetRoomsResponse.builder()
+                        .roomId(room.getId())
+                        .clientName(room.getClient().getClientName())
+                        .location(room.getLocation())
+                        .occurTime(room.getCreatedAt())
+                        .managerName(room.getManager().getManagerName())
+                        .status(room.getStatus())
+                        .previousStatus(RoomStatus.처리중)
+                        .build());
+
         return HttpStatus.OK;
     }
 
