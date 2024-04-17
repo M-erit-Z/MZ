@@ -28,6 +28,8 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final ManagerRepository managerRepository;
 
+    private final EmailService emailService;
+
     public Long create(Client client, CreateRoomRequest in) {
 
         Room room = Room.builder()
@@ -113,22 +115,6 @@ public class RoomService {
         room.submit(in);
         roomRepository.save(room);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         messagingTemplate.convertAndSend("/topic/" + room.getId(),
                 TerminateRoomResponse.builder()
                         .msg("상담이 종료되었습니다.")
@@ -145,6 +131,8 @@ public class RoomService {
                         .previousStatus(RoomStatus.처리중)
                         .build());
 
+        // Email 보내기
+        emailService.sendEmail(in.getClientEmail(), "사고 내역", in.getContent()+"이상입니다.");
         return HttpStatus.OK;
     }
 
