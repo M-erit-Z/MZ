@@ -17,14 +17,18 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
 
-    public void sendEmail(String toEmail, String title, String content) {
+    public void sendEmail(String toEmail, String clientName, Long roomId, StringBuilder content) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(clientName).append(" 님의 ").append(roomId).append("번 사고 내역 입니다.");
+        String title = sb.toString();
 
         try {
             helper.setTo(toEmail);
             helper.setSubject(title);
-            helper.setText(content);
+            helper.setText(content.toString());
 
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
