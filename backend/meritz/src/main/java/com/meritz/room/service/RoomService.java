@@ -1,10 +1,7 @@
 package com.meritz.room.service;
 import com.meritz.client.entity.Client;
 import com.meritz.manager.repository.ManagerRepository;
-import com.meritz.room.dto.CreateRoomRequest;
-import com.meritz.room.dto.GetRoomsResponse;
-import com.meritz.room.dto.JoinRoomResponse;
-import com.meritz.room.dto.SubmitRoomRequest;
+import com.meritz.room.dto.*;
 import com.meritz.room.entity.Room;
 import com.meritz.room.entity.RoomStatus;
 import com.meritz.room.repository.RoomRepository;
@@ -132,7 +129,11 @@ public class RoomService {
 
 
 
-        roomRepository.save(room);
+        messagingTemplate.convertAndSend("/topic/" + room.getId(),
+                TerminateRoomResponse.builder()
+                        .msg("상담이 종료되었습니다.")
+                        .clientId(room.getClient().getId())
+                        .build());
         messagingTemplate.convertAndSend("/topic/rooms",
                 GetRoomsResponse.builder()
                         .roomId(room.getId())

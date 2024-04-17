@@ -5,6 +5,7 @@ let otherKeyList = [];
 let localStream = undefined;
 const messages = [];
 let chatClient = null;
+let terminateClient = null;
 
 const startCam = async () => {
     if (navigator.mediaDevices !== undefined) {
@@ -21,7 +22,9 @@ const startCam = async () => {
     }
 }
 
+
 // 채팅용 소켓 연결
+// 상담 종료 알림 추가
 const connectChat = async () => {
     const chatSocket = new SockJS('/signaling');
     chatClient = Stomp.over(chatSocket);
@@ -29,9 +32,16 @@ const connectChat = async () => {
     chatClient.connect({}, function(frame) {
         console.log('Connected as client');
         chatClient.subscribe(`/topic/${roomId}`, function(message) {
-            const receivedMessage = JSON.parse(message.body);
-            messages.push(receivedMessage);
-            displayMessages();
+            const messageData = JSON.parse(message.body)
+            if (messageData.msg === "상담이 종료되었습니다.") {
+                alert('상담이 종료되었습니다.');
+                window.location.href = '/history/' + messageData.clientId;
+            } else {
+                // const receivedMessage = JSON.parse(message.body);
+                messages.push(messageData);
+                displayMessages();
+            }
+
         });
     });
     document.getElementById('message-input').addEventListener('keydown', handleKeyDown);
@@ -197,6 +207,7 @@ window.onload = async function() {
 
     await connectSocket();
     await connectChat();
+
 };
 
 
