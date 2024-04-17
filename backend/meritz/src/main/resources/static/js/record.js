@@ -25,3 +25,8 @@ function displayRecord(record) {
         <p>채팅 기록: ${record.chatting}</p>
     `;
 }
+
+document.getElementById('toList').addEventListener('click', function(event){
+    window.location.href='/room.html';
+    }
+);

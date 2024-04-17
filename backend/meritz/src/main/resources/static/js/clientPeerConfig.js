@@ -1,7 +1,6 @@
 let localStreamElement = document.querySelector('#localStream');
 const myKey = Math.random().toString(36).substring(2, 11);
 let pcListMap = new Map();
-let roomId;
 let otherKeyList = [];
 let localStream = undefined;
 const messages = [];
@@ -188,40 +187,17 @@ const setLocalAndSendMessage = (pc ,sessionDescription) =>{
     pc.setLocalDescription(sessionDescription);
 }
 
-//룸 번호 입력 후 캠 + 웹소켓 실행
-document.querySelector('#enterRoomBtn').addEventListener('click', async () =>{
+// 방 번호받고 입장 후 캠 + 웹소켓 실행
+window.onload = async function() {
     await startCam();
 
-    if(localStream !== undefined){
+    if (localStream !== undefined) {
         document.querySelector('#localStream').style.display = 'block';
-        document.querySelector('#startSteamBtn').style.display = '';
     }
-
-    roomId = document.querySelector('#roomIdInput').value;
-    document.querySelector('#roomIdInput').disabled = true;
-    document.querySelector('#enterRoomBtn').disabled = true;
 
     await connectSocket();
     await connectChat();
-});
-
-// 스트림 버튼 클릭시 , 다른 웹 key들 웹소켓을 가져 온뒤에 offer -> answer -> iceCandidate 통신
-// peer 커넥션은 pcListMap 으로 저장
-// document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
-//     await stompClient.send(`/app/call/key`, {}, {});
-//
-//     setTimeout(() =>{
-//
-//         otherKeyList.map((key) =>{
-//             if(!pcListMap.has(key)){
-//                 pcListMap.set(key, createPeerConnection(key));
-//                 sendOffer(pcListMap.get(key),key);
-//             }
-//         });
-//
-//     },1000);
-// });
-
+};
 
 
 function sendMessage() {
