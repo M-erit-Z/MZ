@@ -1,11 +1,11 @@
 let localStreamElement = document.querySelector('#localStream');
 const myKey = Math.random().toString(36).substring(2, 11);
 let pcListMap = new Map();
-let roomId;
 let otherKeyList = [];
 let localStream = undefined;
 const messages = [];
 let chatClient = null;
+let clientEmail = null;
 
 const startCam = async () =>{
     if(navigator.mediaDevices !== undefined){
@@ -190,22 +190,35 @@ const setLocalAndSendMessage = (pc ,sessionDescription) =>{
     pc.setLocalDescription(sessionDescription);
 }
 
-//룸 번호 입력 후 캠 + 웹소켓 실행
-document.querySelector('#enterRoomBtn').addEventListener('click', async () =>{
+// 방 번호받고 입장 후 캠 + 웹소켓 실행
+window.onload = async function() {
+    // 기본 값 채우기
+    fetch(`/api/rooms/${roomId}`, { })
+        .then(response => response.json())
+        .then(data => {
+            let date = new Date(data.createTime);
+            let dateString = date.toISOString().slice(0, 16);
+            clientEmail = data.clientEmail;
+            document.getElementById('clientName').value = data.clientName;
+            document.getElementById('clientName').setAttribute('readonly', true);
+            document.getElementById('clientPhone').value = data.clientPhone;
+            document.getElementById('clientPhone').setAttribute('readonly', true);
+            document.getElementById('occurTime').value = dateString;
+            document.getElementById('occurTime').setAttribute('readonly', true);
+            document.getElementById('location').value = data.location;
+            document.getElementById('location').setAttribute('readonly', true);
+        })
     await startCam();
 
-    if(localStream !== undefined && localStreamElement){
+    if (localStream !== undefined && localStreamElement) {
         document.querySelector('#localStream').style.display = 'block';
         document.querySelector('#startSteamBtn').style.display = '';
     }
 
-    roomId = document.querySelector('#roomIdInput').value;
-    document.querySelector('#roomIdInput').disabled = true;
-    document.querySelector('#enterRoomBtn').disabled = true;
-
     await connectSocket();
     await connectChat();
-});
+};
+
 
 // 스트림 버튼 클릭시 , 다른 웹 key들 웹소켓을 가져 온뒤에 offer -> answer -> iceCandidate 통신
 // peer 커넥션은 pcListMap 으로 저장
@@ -260,3 +273,39 @@ function displayMessages() {
         messageList.appendChild(messageElement);
     });
 }
+
+// 상담 종료
+document.getElementById('endRecord').addEventListener('click', function(event) {
+    event.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
+
+    console.log("clicked");
+    fetch(`/api/rooms/${roomId}`, {
+        method: 'POST', // 또는 'GET', 서버의 요구사항에 따라 조정
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            roomId: roomId,
+            clientName: document.getElementById('clientName').value,
+            clientPhone: document.getElementById('clientPhone').value,
+            clientEmail: clientEmail,
+            occurTime: document.getElementById('occurTime').value,
+            location: document.getElementById('location').value,
+            content: document.getElementById('content').value,
+            chatting: "Chat"
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json(); // 응답을 JSON 형태로 파싱
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+            console.log('Success:', data);
+            window.location.href = `/record/${roomId}`; // 성공 시 리디렉션
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});

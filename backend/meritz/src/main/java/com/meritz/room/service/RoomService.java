@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class RoomService {
         Room room = Room.builder()
                 .client(client)
                 .location(in.getLocation())
+                .occurTime(LocalDateTime.now())
                 .status(RoomStatus.대기중)
                 .manager(managerRepository.findById(1L).get())
                 .build();
