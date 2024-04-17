@@ -31,6 +31,8 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final ManagerRepository managerRepository;
 
+    private final EmailService emailService;
+
     public Long create(Client client, CreateRoomRequest in) {
 
         Room room = Room.builder()
@@ -113,6 +115,8 @@ public class RoomService {
     }
 
     public HttpStatus submit(Room room, SubmitRoomRequest in) {
+        // 이메일 보내기
+        emailService.sendEmail(in.getClientEmail(),"Meritz 사고 내용",  in.getContent()+"내용입니다.");
         room.submit(in);
         roomRepository.save(room);
         return HttpStatus.OK;

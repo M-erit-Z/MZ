@@ -7,3 +7,15 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
       enabled: true
+  mail:
+    host: smtp.gmail.com # 1
+    port: 587 # 2
+    username: ${EMAIL_USERNAME} # 3
+    password: ${EMAIL_PASSWORD} # 4
+    properties:
+      mail:
+        smtp:
+          auth: true # 5
+          timeout: 50000
+          starttls:
+            enable: true
