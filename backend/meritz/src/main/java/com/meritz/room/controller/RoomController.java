@@ -50,7 +50,6 @@ public class RoomController {
 
     @PostMapping("/api/rooms/{roomId}")
     public ResponseEntity<?> submit(@PathVariable("roomId") Long roomId, @RequestBody SubmitRoomRequest in) {
-        log.info("come");
         log.info(in.toString());
         Optional<Room> findRoom = roomRepository.findById(roomId);
         if (findRoom.isPresent()) {
