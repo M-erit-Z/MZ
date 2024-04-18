@@ -175,13 +175,12 @@ window.onload = async function() {
         .then(response => response.json())
         .then(data => {
             let date = new Date(data.createTime);
-            let dateString = date.toISOString().slice(0, 16);
             clientEmail = data.clientEmail;
             document.getElementById('clientName').value = data.clientName;
             document.getElementById('clientName').setAttribute('readonly', true);
             document.getElementById('clientPhone').value = data.clientPhone;
             document.getElementById('clientPhone').setAttribute('readonly', true);
-            document.getElementById('occurTime').value = dateString;
+            document.getElementById('occurTime').value = formatDateTimeForInput(date);
             document.getElementById('occurTime').setAttribute('readonly', true);
             document.getElementById('location').value = data.location;
             document.getElementById('location').setAttribute('readonly', true);
@@ -297,6 +296,19 @@ function displayMessages() {
 
         messageList.scrollTop = messageList.scrollHeight;
     });
+}
+
+function formatDateTimeForInput(dateTimeStr) {
+    const date = new Date(dateTimeStr);
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    // 최종적으로 조합된 포맷 반환
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 // 상담 종료
