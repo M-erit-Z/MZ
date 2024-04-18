@@ -254,3 +254,43 @@ function displayMessages() {
 function endCall() {
     window.location.href = `/history/${clientId}`;
 }
+const toggleCamera = async () => {
+    if (!localStream) {
+        console.error("No local stream available.");
+        return;
+    }
+
+    // 현재 비디오 트랙의 facingMode 확인
+    const videoTrack = localStream.getVideoTracks()[0];
+    const currentFacingMode = videoTrack.getSettings().facingMode;
+
+    // 전환할 카메라 설정
+    const newFacingMode = currentFacingMode === "user" ? "environment" : "user";
+    const constraints = {
+        video: { facingMode: newFacingMode }
+    };
+
+    // 새 스트림 획득
+    try {
+        const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+        const newVideoTrack = newStream.getVideoTracks()[0];
+
+        // 기존 트랙 교체
+        const sender = pcListMap.get(myKey).getSenders().find(sender => sender.track.kind === "video");
+        sender.replaceTrack(newVideoTrack);
+
+        // 기존 스트림의 비디오 트랙 중지
+        videoTrack.stop();
+
+        // localStream 업데이트
+        localStream.removeTrack(videoTrack);
+        localStream.addTrack(newVideoTrack);
+
+        // 비디오 요소 업데이트
+        localStreamElement.srcObject = null;
+        localStreamElement.srcObject = localStream;
+        console.log('Camera switched to ' + newFacingMode);
+    } catch (error) {
+        console.error("Could not switch camera", error);
+    }
+};
