@@ -252,6 +252,5 @@ function displayMessages() {
 }
 
 function endCall() {
-    // window.location.href = `/record/${roomId}`;
     window.location.href = `/history/${clientId}`;
 }
