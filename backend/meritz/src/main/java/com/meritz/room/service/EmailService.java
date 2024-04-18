@@ -24,7 +24,7 @@ public class EmailService {
 
         sb.append(clientName).append(" 님의 ").append(roomId).append("번 사고 내역 입니다.");
         content.append("\n").append("\n").append("\n");
-        content.append("채팅 내역 입니다.");
+        content.append("채팅 내역 입니다.").append("\n");
         content.append(chat);
         String title = sb.toString();
 
