@@ -79,4 +79,14 @@ public class RoomController {
         }
     }
 
+    @GetMapping("/api/rooms/client/{roomId}")
+    public ResponseEntity<?> getClientId(@PathVariable("roomId") Long roomId) {
+        Optional<Room> findRoom = roomRepository.findById(roomId);
+        if (findRoom.isPresent()) {
+            return ResponseEntity.ok(roomService.getClientId(findRoom.get()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Room Not Fond.");
+        }
+    }
+
 }

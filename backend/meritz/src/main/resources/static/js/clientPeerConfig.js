@@ -6,6 +6,7 @@ let localStream = undefined;
 const messages = [];
 let chatClient = null;
 let terminateClient = null;
+let clientId = null;
 
 const startCam = async () => {
     if (navigator.mediaDevices !== undefined) {
@@ -199,6 +200,12 @@ const setLocalAndSendMessage = (pc ,sessionDescription) =>{
 
 // 방 번호받고 입장 후 캠 + 웹소켓 실행
 window.onload = async function() {
+    fetch(`/api/rooms/client/${roomId}`, { })
+        .then(response => response.json())
+        .then(data => {
+            console.log()
+            clientId = data.clientId;
+        });
     await startCam();
 
     if (localStream !== undefined) {
@@ -225,8 +232,6 @@ function sendMessage() {
     }
 }
 
-
-
 function displayMessages() {
     const messageList = document.getElementById('message-list');
     messageList.innerHTML = '';
@@ -244,4 +249,8 @@ function displayMessages() {
 
         messageList.scrollTop = messageList.scrollHeight;
     });
+}
+
+function endCall() {
+    window.location.href = `/history/${clientId}`;
 }

@@ -155,4 +155,11 @@ public class RoomService {
                 .chatting(room.getChat().getMessages())
                 .build();
     }
+
+    public ClientIdResponse getClientId(Room room) {
+        log.info("here " + room.getClient().getId());
+        return ClientIdResponse.builder()
+                .clientId(room.getClient().getId())
+                .build();
+    }
 }

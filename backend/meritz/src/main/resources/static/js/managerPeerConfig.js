@@ -185,7 +185,7 @@ window.onload = async function() {
             document.getElementById('occurTime').setAttribute('readonly', true);
             document.getElementById('location').value = data.location;
             document.getElementById('location').setAttribute('readonly', true);
-        })
+        });
     await startCam();
 
     if (localStream !== undefined && localStreamElement) {
