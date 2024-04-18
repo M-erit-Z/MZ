@@ -30,6 +30,7 @@
 
 .video-section {
     width: 100%; /* 가변적인 너비 대신 100%로 설정 */
+    height: 1000px;
     max-width: 500px; /* 최대 너비를 500px로 설정 */
     aspect-ratio: 16 / 9; /* 비디오 비율을 16:9로 유지 */
     background-color: #ddd;
