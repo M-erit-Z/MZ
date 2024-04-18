@@ -1,4 +1,6 @@
 package com.meritz.room.service;
+import com.meritz.chat.entity.Chat;
+import com.meritz.chat.service.ChatService;
 import com.meritz.client.entity.Client;
 import com.meritz.manager.repository.ManagerRepository;
 import com.meritz.room.dto.*;
@@ -27,10 +29,12 @@ public class RoomService {
     private SimpMessagingTemplate messagingTemplate;
     private final RoomRepository roomRepository;
     private final ManagerRepository managerRepository;
+    private final ChatService chatService;
 
     private final EmailService emailService;
 
     public Long create(Client client, CreateRoomRequest in) {
+        Chat chat = chatService.create();
 
         Room room = Room.builder()
                 .client(client)
@@ -38,6 +42,7 @@ public class RoomService {
                 .occurTime(LocalDateTime.now())
                 .status(RoomStatus.대기중)
                 .manager(managerRepository.findById(1L).get())
+                .chat(chat)
                 .build();
         roomRepository.save(room);
 
@@ -134,7 +139,7 @@ public class RoomService {
         // Email 보내기
         StringBuilder content = new StringBuilder();
         content.append(in.getContent()).append("\n").append("\n").append("이상 매니저 ").append(room.getManager().getManagerName()).append("이었습니다.").append("감사합니다.");
-        emailService.sendEmail(in.getClientEmail(), in.getClientName(), in.getRoomId(), content);
+        emailService.sendEmail(in.getClientEmail(), in.getClientName(), in.getRoomId(), content, room.getChat().getMessages());
         return HttpStatus.OK;
     }
 
@@ -147,6 +152,7 @@ public class RoomService {
                 .occurTime(room.getOccurTime())
                 .location(room.getLocation())
                 .content(room.getContent())
+                .chatting(room.getChat().getMessages())
                 .build();
     }
 }

@@ -215,6 +215,7 @@ function sendMessage() {
     const newMessage = document.getElementById('message-input').value;
     if (newMessage && chatClient && chatClient.connected) {
         const chatMessage = {
+            roomId: roomId,
             writerId: 'client',
             messages: newMessage
         };
@@ -224,25 +225,23 @@ function sendMessage() {
     }
 }
 
-function handleKeyDown(event) {
-    if (event.key === 'Enter') {
-        if (!event.shiftKey) {
-            event.preventDefault();
-            sendMessage();
-        }
-    }
-}
+
 
 function displayMessages() {
     const messageList = document.getElementById('message-list');
     messageList.innerHTML = '';
-    messages.forEach((message, index) => {
+
+    messages.forEach(message => {
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.writerId === 'client' ? 'sent' : 'received'}`;
+
         const contentElement = document.createElement('div');
         contentElement.className = 'message-content';
-        contentElement.textContent = message.messages;
+        contentElement.textContent = message.messages; // 메시지 내용 설정
+
         messageElement.appendChild(contentElement);
         messageList.appendChild(messageElement);
+
+        messageList.scrollTop = messageList.scrollHeight;
     });
 }

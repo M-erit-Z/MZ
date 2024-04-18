@@ -3,11 +3,10 @@ package com.meritz.chat.dto;
 import lombok.Data;
 
 @Data
-public class ChatDto {
+public class ChatRequest {
 
-    private Integer roomId;
+    private Long roomId;
     private String writerId;
     private String messages;
-
 
 }
