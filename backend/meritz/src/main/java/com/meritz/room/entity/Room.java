@@ -20,7 +20,11 @@ import lombok.experimental.SuperBuilder;
 public class Room extends BaseEntity {
 
     private String location;
+
+    @Lob
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String content;
+
     private LocalDateTime occurTime;
     @Enumerated(EnumType.STRING)
     private RoomStatus status;

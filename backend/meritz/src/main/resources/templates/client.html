@@ -28,7 +28,7 @@
     <textarea id="message-input" class="message-input" placeholder="Type a message... (Shift+Enter for new line)" rows="4"></textarea>
     <button onclick="sendMessage()">Send</button>
 </div>
-<script th:inline="javascript">
+    <script th:inline="javascript">
     const roomId = [[${roomId}]];
 </script>
 <script th:src="@{/js/clientPeerConfig.js}"></script>

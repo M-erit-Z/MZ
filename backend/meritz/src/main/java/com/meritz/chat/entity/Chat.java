@@ -2,9 +2,7 @@ package com.meritz.chat.entity;
 
 import com.meritz.global.entity.BaseEntity;
 import com.meritz.room.entity.Room;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,12 +12,18 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 public class Chat extends BaseEntity {
 
+    @Lob
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String messages;
 
-    @OneToOne(mappedBy = "")
+    @OneToOne(mappedBy = "chat")
     private Room room;
+
+    public void updateChat(String chat) {
+        this.messages+=chat;
+    }
 }
