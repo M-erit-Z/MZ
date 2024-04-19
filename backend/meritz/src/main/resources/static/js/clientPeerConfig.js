@@ -7,6 +7,8 @@ const messages = [];
 let chatClient = null;
 let terminateClient = null;
 let clientId = null;
+let lat = null;
+let lng = null;
 
 const startCam = async () => {
     if (navigator.mediaDevices !== undefined) {
@@ -135,7 +137,8 @@ const createPeerConnection = (otherKey) =>{
     const config = {
         iceServers: [
             {
-                urls: "turn:meritz.store", username: "meritz", credential: "meritz"
+                // urls: "turn:meritz.store", username: "meritz", credential: "meritz"
+                urls: "turn:34.64.249.146", username: "meritz", credential: "meritz"
             }
         ]
     };
@@ -249,6 +252,12 @@ function displayMessages() {
 
         messageList.scrollTop = messageList.scrollHeight;
     });
+}
+
+function findMap() {
+    // 현재 위치 전달
+    // 지도 페이지로 이동
+    window.location.href = '/map';
 }
 
 function endCall() {
