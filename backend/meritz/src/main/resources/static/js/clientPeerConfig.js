@@ -254,12 +254,6 @@ function displayMessages() {
     });
 }
 
-function findMap() {
-    // 현재 위치 전달
-    // 지도 페이지로 이동
-    window.location.href = '/map';
-}
-
 function endCall() {
     window.location.href = `/history/${clientId}`;
 }
