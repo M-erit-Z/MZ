@@ -263,3 +263,64 @@ function findMap() {
 function endCall() {
     window.location.href = `/history/${clientId}`;
 }
+
+var map;
+var infowindow = new kakao.maps.InfoWindow({removable: true});
+var markers = []; // 마커를 저장할 배열
+
+document.getElementById('mapBtn').addEventListener('click', function() {
+    document.getElementById('mapModal').style.display = 'block';
+    if (!map) {
+        map = new kakao.maps.Map(document.getElementById('map'), {
+            center: new kakao.maps.LatLng(37.566826, 126.9786567), // 서울 시청
+            level: 3 // 지도의 확대 레벨
+        });
+    }
+    navigator.geolocation.getCurrentPosition(function(position) {
+        var lat = position.coords.latitude,
+            lng = position.coords.longitude;
+        map.setCenter(new kakao.maps.LatLng(lat, lng));
+    });
+});
+
+window.onclick = function(event) {
+    if (event.target == document.getElementById('mapModal')) {
+        document.getElementById('mapModal').style.display = 'none';
+    }
+}
+
+function searchPlaces(type) {
+    var ps = new kakao.maps.services.Places();
+    var center = map.getCenter();
+    ps.keywordSearch(type, function(data, status, pagination) {
+        if (status === kakao.maps.services.Status.OK) {
+            clearOverlays(); // 기존 마커 제거
+            for (var i=0; i<data.length; i++) {
+                displayMarker(data[i]);
+            }
+        } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+            alert('검색 결과가 존재하지 않습니다.');
+        } else if (status === kakao.maps.services.Status.ERROR) {
+            alert('검색 결과 중 오류가 발생했습니다.');
+        }
+    }, { location: center });
+}
+
+function displayMarker(place) {
+    var marker = new kakao.maps.Marker({
+        map: map,
+        position: new kakao.maps.LatLng(place.y, place.x)
+    });
+    markers.push(marker); // 마커를 배열에 추가
+    kakao.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
+        infowindow.open(map, marker);
+    });
+}
+
+function clearOverlays() {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+    markers = []; // 마커 배열 초기화
+}
