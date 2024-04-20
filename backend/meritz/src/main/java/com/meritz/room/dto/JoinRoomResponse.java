@@ -13,4 +13,5 @@ public class JoinRoomResponse {
     private String clientEmail;
     private LocalDateTime createTime;
     private String location;
+    private String chatRecord;
 }

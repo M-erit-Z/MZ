@@ -6,6 +6,9 @@ let localStream = undefined;
 const messages = [];
 let chatClient = null;
 let terminateClient = null;
+let clientId = null;
+let lat = null;
+let lng = null;
 
 const startCam = async () => {
     if (navigator.mediaDevices !== undefined) {
@@ -132,9 +135,20 @@ let onTrack = (event, otherKey) => {
 
 const createPeerConnection = (otherKey) =>{
     const config = {
+        // iceServers: [
+        //     {
+        //         // urls: "turn:meritz.store", username: "meritz", credential: "meritz"
+        //         urls: "turn:34.64.249.146", username: "meritz", credential: "meritz"
+        //     }
+        // ]
         iceServers: [
             {
-                urls: "turn:meritz.store", username: "meritz", credential: "meritz"
+                urls: "stun:stun.l.google.com:19302"
+            },
+            {
+                urls: "turn:34.64.249.146",
+                username: "meritz",
+                credential: "meritz"
             }
         ]
     };
@@ -199,6 +213,12 @@ const setLocalAndSendMessage = (pc ,sessionDescription) =>{
 
 // 방 번호받고 입장 후 캠 + 웹소켓 실행
 window.onload = async function() {
+    fetch(`/api/rooms/client/${roomId}`, { })
+        .then(response => response.json())
+        .then(data => {
+            console.log()
+            clientId = data.clientId;
+        });
     await startCam();
 
     if (localStream !== undefined) {
@@ -215,6 +235,7 @@ function sendMessage() {
     const newMessage = document.getElementById('message-input').value;
     if (newMessage && chatClient && chatClient.connected) {
         const chatMessage = {
+            roomId: roomId,
             writerId: 'client',
             messages: newMessage
         };
@@ -224,25 +245,86 @@ function sendMessage() {
     }
 }
 
-function handleKeyDown(event) {
-    if (event.key === 'Enter') {
-        if (!event.shiftKey) {
-            event.preventDefault();
-            sendMessage();
-        }
-    }
-}
-
 function displayMessages() {
     const messageList = document.getElementById('message-list');
     messageList.innerHTML = '';
-    messages.forEach((message, index) => {
+
+    messages.forEach(message => {
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.writerId === 'client' ? 'sent' : 'received'}`;
+
         const contentElement = document.createElement('div');
         contentElement.className = 'message-content';
-        contentElement.textContent = message.messages;
+        contentElement.textContent = message.messages; // 메시지 내용 설정
+
         messageElement.appendChild(contentElement);
         messageList.appendChild(messageElement);
+
+        messageList.scrollTop = messageList.scrollHeight;
     });
+}
+
+function endCall() {
+    window.location.href = `/history/${clientId}`;
+}
+
+var map;
+var infowindow = new kakao.maps.InfoWindow({removable: true});
+var markers = []; // 마커를 저장할 배열
+
+document.getElementById('mapBtn').addEventListener('click', function() {
+    document.getElementById('mapModal').style.display = 'block';
+    if (!map) {
+        map = new kakao.maps.Map(document.getElementById('map'), {
+            center: new kakao.maps.LatLng(37.566826, 126.9786567), // 서울 시청
+            level: 3 // 지도의 확대 레벨
+        });
+    }
+    navigator.geolocation.getCurrentPosition(function(position) {
+        var lat = position.coords.latitude,
+            lng = position.coords.longitude;
+        map.setCenter(new kakao.maps.LatLng(lat, lng));
+    });
+});
+
+window.onclick = function(event) {
+    if (event.target == document.getElementById('mapModal')) {
+        document.getElementById('mapModal').style.display = 'none';
+    }
+}
+
+function searchPlaces(type) {
+    var ps = new kakao.maps.services.Places();
+    var center = map.getCenter();
+    ps.keywordSearch(type, function(data, status, pagination) {
+        if (status === kakao.maps.services.Status.OK) {
+            clearOverlays(); // 기존 마커 제거
+            for (var i=0; i<data.length; i++) {
+                displayMarker(data[i]);
+            }
+        } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+            alert('검색 결과가 존재하지 않습니다.');
+        } else if (status === kakao.maps.services.Status.ERROR) {
+            alert('검색 결과 중 오류가 발생했습니다.');
+        }
+    }, { location: center });
+}
+
+function displayMarker(place) {
+    var marker = new kakao.maps.Marker({
+        map: map,
+        position: new kakao.maps.LatLng(place.y, place.x)
+    });
+    markers.push(marker); // 마커를 배열에 추가
+    kakao.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
+        infowindow.open(map, marker);
+    });
+}
+
+function clearOverlays() {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+    markers = []; // 마커 배열 초기화
 }

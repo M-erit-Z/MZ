@@ -6,6 +6,8 @@ let localStream = undefined;
 const messages = [];
 let chatClient = null;
 let clientEmail = null;
+let mediaRecorder;
+let recordedChunks = [];
 
 const startCam = async () =>{
     if(navigator.mediaDevices !== undefined){
@@ -38,7 +40,7 @@ const connectChat = async () => {
     document.getElementById('message-input').addEventListener('keydown', handleKeyDown);
 }
 
-// 소켓 연결
+// WebRTC용 소켓 연결
 const connectSocket = async () =>{
     const socket = new SockJS('/signaling');
     stompClient = Stomp.over(socket);
@@ -46,71 +48,49 @@ const connectSocket = async () =>{
 
     stompClient.connect({}, function () {
         console.log('Connected to WebRTC server');
-        console.log('0');
 
-
-        //iceCandidate peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/iceCandidate/${myKey}/${roomId}`, candidate => {
             const key = JSON.parse(candidate.body).key
             const message = JSON.parse(candidate.body).body;
-            console.log("1");
 
-            // 해당 key에 해당되는 peer 에 받은 정보를 addIceCandidate 해준다.
             pcListMap.get(key).addIceCandidate(new RTCIceCandidate({candidate:message.candidate,sdpMLineIndex:message.sdpMLineIndex,sdpMid:message.sdpMid}));
-            console.log("2");
         });
 
-        //offer peer 교환을 위한 subscribe
+
         stompClient.subscribe(`/topic/peer/offer/${myKey}/${roomId}`, offer => {
             const key = JSON.parse(offer.body).key;
             const message = JSON.parse(offer.body).body;
 
-            // 해당 key에 새로운 peerConnection 를 생성해준후 pcListMap 에 저장해준다.
-            pcListMap.set(key,createPeerConnection(key));
 
-            // 생성한 peer 에 offer정보를 setRemoteDescription 해준다.
+            pcListMap.set(key,createPeerConnection(key));
             pcListMap.get(key).setRemoteDescription(new RTCSessionDescription({type:message.type,sdp:message.sdp}));
 
-            //sendAnswer 함수를 호출해준다.
             sendAnswer(pcListMap.get(key), key);
-
         });
 
-        //answer peer 교환을 위한 subscribe
         stompClient.subscribe(`/topic/peer/answer/${myKey}/${roomId}`, answer =>{
             const key = JSON.parse(answer.body).key;
             const message = JSON.parse(answer.body).body;
-            console.log("7");
 
-            // 해당 key에 해당되는 Peer 에 받은 정보를 setRemoteDescription 해준다.
             pcListMap.get(key).setRemoteDescription(new RTCSessionDescription(message));
-            console.log("8");
-
         });
 
-        //key를 보내라는 신호를 받은 subscribe
         stompClient.subscribe(`/topic/call/key`, message =>{
-            //자신의 key를 보내는 send
             stompClient.send(`/app/send/key`, {}, JSON.stringify(myKey));
-            console.log("9");
         });
 
-        //상대방의 key를 받는 subscribe
         stompClient.subscribe(`/topic/send/key`, message => {
             const key = JSON.parse(message.body);
 
-            //만약 중복되는 키가 ohterKeyList에 있는지 확인하고 없다면 추가해준다.
             if(myKey !== key && otherKeyList.find((mapKey) => mapKey === myKey) === undefined){
                 otherKeyList.push(key);
             }
-            console.log("10");
         });
 
     });
 }
 
 let onTrack = (event, otherKey) => {
-
     if(document.getElementById(`${otherKey}`) === null){
         const video =  document.createElement('video');
 
@@ -127,12 +107,16 @@ const createPeerConnection = (otherKey) =>{
     const config = {
         iceServers: [
             {
-                urls: "turn:meritz.store", username: "meritz", credential: "meritz"
+                urls: "stun:stun.l.google.com:19302"
+            },
+            {
+                urls: "turn:34.64.249.146",
+                username: "meritz",
+                credential: "meritz"
             }
         ]
     };
     const pc = new RTCPeerConnection(config);
-
     try {
         pc.addEventListener('icecandidate', (event) =>{
             console.log("manager icecandidate start");
@@ -152,7 +136,6 @@ const createPeerConnection = (otherKey) =>{
     }
     return pc;
 }
-
 
 let onIceCandidate = (event, otherKey) => {
     if (event.candidate) {
@@ -197,17 +180,16 @@ window.onload = async function() {
         .then(response => response.json())
         .then(data => {
             let date = new Date(data.createTime);
-            let dateString = date.toISOString().slice(0, 16);
             clientEmail = data.clientEmail;
             document.getElementById('clientName').value = data.clientName;
             document.getElementById('clientName').setAttribute('readonly', true);
             document.getElementById('clientPhone').value = data.clientPhone;
             document.getElementById('clientPhone').setAttribute('readonly', true);
-            document.getElementById('occurTime').value = dateString;
+            document.getElementById('occurTime').value = formatDateTimeForInput(date);
             document.getElementById('occurTime').setAttribute('readonly', true);
             document.getElementById('location').value = data.location;
             document.getElementById('location').setAttribute('readonly', true);
-        })
+        });
     await startCam();
 
     if (localStream !== undefined && localStreamElement) {
@@ -220,8 +202,6 @@ window.onload = async function() {
 };
 
 
-// 스트림 버튼 클릭시 , 다른 웹 key들 웹소켓을 가져 온뒤에 offer -> answer -> iceCandidate 통신
-// peer 커넥션은 pcListMap 으로 저장
 document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
     await stompClient.send(`/app/call/key`, {}, {});
 
@@ -232,14 +212,11 @@ document.querySelector('#startSteamBtn').addEventListener('click', async () =>{
                 pcListMap.set(key, createPeerConnection(key));
                 sendOffer(pcListMap.get(key),key);
             }
-
         });
 
     },1000);
 });
 
-let mediaRecorder;
-let recordedChunks = [];
 
 // 영상녹화
 document.getElementById('startRecording').addEventListener('click', function() {
@@ -283,23 +260,10 @@ function saveVideo() {
     }, 100);
 }
 
-
-function sendMessage() {
-    const newMessage = document.getElementById('message-input').value;
-    if (newMessage && chatClient && chatClient.connected) {
-        const chatMessage = {
-            writerId: 'manager',
-            messages: newMessage
-        };
-
-        chatClient.send(`/app/chat/sendMessage/${roomId}`, {}, JSON.stringify(chatMessage));
-        document.getElementById('message-input').value = ''; // 메시지 입력란 초기화
-    }
-}
-
 function sendScript(message) {
     if (message && chatClient && chatClient.connected) {
         const chatMessage = {
+            roomId: roomId,
             writerId: 'manager',
             messages: message
         };
@@ -308,27 +272,48 @@ function sendScript(message) {
     }
 }
 
-function handleKeyDown(event) {
-    if (event.key === 'Enter') {
-        if (!event.shiftKey) {
-            event.preventDefault();
-            sendMessage();
-        }
+function sendMessage() {
+    const newMessage = document.getElementById('message-input').value;
+    if (newMessage && chatClient && chatClient.connected) {
+        const chatMessage = {
+            roomId: roomId,
+            writerId: 'manager',
+            messages: newMessage
+        };
+        chatClient.send(`/app/chat/sendMessage/${roomId}`, {}, JSON.stringify(chatMessage));
+        document.getElementById('message-input').value = ''; // 메시지 입력란 초기화
     }
 }
 
 function displayMessages() {
     const messageList = document.getElementById('message-list');
     messageList.innerHTML = '';
-    messages.forEach((message, index) => {
+    messages.forEach(message => {
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.writerId === 'manager' ? 'sent' : 'received'}`;
+
         const contentElement = document.createElement('div');
         contentElement.className = 'message-content';
-        contentElement.textContent = message.messages;
+        contentElement.textContent = message.messages; // 메시지 내용 설정
+
         messageElement.appendChild(contentElement);
         messageList.appendChild(messageElement);
+
+        messageList.scrollTop = messageList.scrollHeight;
     });
+}
+
+function formatDateTimeForInput(dateTimeStr) {
+    const date = new Date(dateTimeStr);
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    // 최종적으로 조합된 포맷 반환
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 // 상담 종료
@@ -348,8 +333,7 @@ document.getElementById('endRecord').addEventListener('click', function(event) {
             clientEmail: clientEmail,
             occurTime: document.getElementById('occurTime').value,
             location: document.getElementById('location').value,
-            content: document.getElementById('content').value,
-            chatting: "Chat"
+            content: document.getElementById('content').value
         })
     })
         .then(response => {
@@ -366,4 +350,3 @@ document.getElementById('endRecord').addEventListener('click', function(event) {
             console.error('Error:', error);
         });
 });
-
