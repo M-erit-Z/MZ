@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class SubmitRoomRequest {
     private Long roomId;
+    private Long clientId;
     private String clientName;
     private String clientPhone;
     private String clientEmail;
