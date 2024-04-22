@@ -295,6 +295,7 @@ function sendMessage() {
 function displayMessages() {
     const messageList = document.getElementById('message-list');
     messageList.innerHTML = '';
+
     messages.forEach(message => {
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.writerId === 'manager' ? 'sent' : 'received'}`;
