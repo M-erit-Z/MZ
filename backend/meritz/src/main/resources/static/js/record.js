@@ -1,3 +1,5 @@
+let clientId = null;
+
 window.onload = function() {
     fetch(`/api/record/${roomId}`)
         .then(response => {
@@ -8,6 +10,7 @@ window.onload = function() {
         })
         .then(data => {
             displayRecord(data);
+            clientId = data.clientId;
         })
         .catch(error => {
             console.error('Failed to fetch record:', error);
@@ -27,6 +30,6 @@ function displayRecord(record) {
 }
 
 document.getElementById('toList').addEventListener('click', function(event){
-    window.location.href='/room.html';
+    window.location.href=`/history/${clientId}`;
     }
 );
