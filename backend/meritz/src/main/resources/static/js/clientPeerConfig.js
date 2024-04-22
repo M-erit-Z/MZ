@@ -328,3 +328,13 @@ function clearOverlays() {
     }
     markers = []; // 마커 배열 초기화
 }
+
+function closeModal() {
+    document.getElementById('mapModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    if (event.target == document.getElementById('mapModal')) {
+        closeModal();
+    }
+}
