@@ -117,6 +117,7 @@ const createPeerConnection = (otherKey) =>{
             },
             {
                 urls: "turn:meritz.store",
+                // urls: "turn:34.64.249.146",
                 username: "meritz",
                 credential: "meritz"
             }
