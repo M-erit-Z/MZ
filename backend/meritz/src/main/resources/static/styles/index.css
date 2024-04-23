@@ -33,3 +33,11 @@ button {
 #managerEntry:hover {
     background-color: #4646f6; /* 매니저 버튼 호버 색상 */
 }
+
+#clientSignup {
+    background-color: #2bd332;
+}
+
+#clientSignup:hover {
+    background-color: #0b9413;
+}

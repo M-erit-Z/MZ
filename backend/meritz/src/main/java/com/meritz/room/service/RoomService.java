@@ -146,6 +146,7 @@ public class RoomService {
     public SubmitRoomRequest read(Room room) {
         return SubmitRoomRequest.builder()
                 .roomId(room.getId())
+                .clientId(room.getClient().getId())
                 .clientName(room.getClient().getClientName())
                 .clientPhone(room.getClient().getClientPhone())
                 .clientEmail(room.getClient().getClientEmail())

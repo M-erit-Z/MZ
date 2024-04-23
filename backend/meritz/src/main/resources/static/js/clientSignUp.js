@@ -18,6 +18,7 @@ document.getElementById('clientForm').addEventListener('submit', function(e) {
         .then(response => response.json())
         .then(data => {
             alert('회원가입 성공');
+            window.location.href='/register.html';
         })
         .catch(error => {
             console.error('Error:', error);

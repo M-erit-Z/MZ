@@ -105,16 +105,24 @@ let onTrack = (event, otherKey) => {
 
 const createPeerConnection = (otherKey) =>{
     const config = {
+        // iceServers: [
+        //     {
+        //         // urls: "turn:meritz.store", username: "meritz", credential: "meritz"
+        //         urls: "turn:34.64.249.146", username: "meritz", credential: "meritz"
+        //     }
+        // ]
         iceServers: [
             {
                 urls: "stun:stun.l.google.com:19302"
             },
             {
-                urls: "turn:34.64.249.146",
+                urls: "turn:meritz.store",
+                // urls: "turn:34.64.249.146",
                 username: "meritz",
                 credential: "meritz"
             }
         ]
+
     };
     const pc = new RTCPeerConnection(config);
     try {
@@ -288,6 +296,7 @@ function sendMessage() {
 function displayMessages() {
     const messageList = document.getElementById('message-list');
     messageList.innerHTML = '';
+
     messages.forEach(message => {
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.writerId === 'manager' ? 'sent' : 'received'}`;
