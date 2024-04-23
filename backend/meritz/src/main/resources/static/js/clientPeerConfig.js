@@ -346,7 +346,7 @@ function fetchInsuranceEstimate() {
         .then(data => {
             document.getElementById('insuranceCurrentFee').textContent = `현재 보험료: ${data.currentFee} 만원`;
             document.getElementById('insuranceIncreaseFee').textContent = `인상 후 보험료: ${data.increaseFee} 만원`;
-            document.getElementById('insuranceAccidentAmount').textContent = `사고 피해 액이 ${data.accidentAmount} 만원 이상일 시 보험처리를 권장합니다.`;
+            document.getElementById('insuranceAccidentAmount').textContent = `사고 피해액이 ${data.accidentAmount} 만원 이상일 시 보험처리를 권장합니다.`;
         })
         .catch(error => {
             console.error('Error fetching insurance data:', error);
