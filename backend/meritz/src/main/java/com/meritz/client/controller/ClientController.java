@@ -4,6 +4,8 @@ import com.meritz.client.dto.ClientSignUpRequest;
 import com.meritz.client.entity.Client;
 import com.meritz.client.repository.ClientRepository;
 import com.meritz.client.service.ClientService;
+import com.meritz.room.entity.Room;
+import com.meritz.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ public class ClientController {
 
     private final ClientService clientService;
     private final ClientRepository clientRepository;
+    private final RoomRepository roomRepository;
 
     @GetMapping("/api/clients")
     public ResponseEntity<?> getClientId(@RequestParam("clientName") String clientName,
@@ -48,6 +51,16 @@ public class ClientController {
             return ResponseEntity.ok(clientService.signUp(in));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client Already Exists.");
+        }
+    }
+
+    @GetMapping("/api/clients/fee/{roomId}")
+    public ResponseEntity<?> getFee(@PathVariable("roomId") Long roomId) {
+        Optional<Room> room = roomRepository.findById(roomId);
+        if (room.isPresent()) {
+            return ResponseEntity.ok(clientService.getFee(room.get()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client Not Found");
         }
     }
 

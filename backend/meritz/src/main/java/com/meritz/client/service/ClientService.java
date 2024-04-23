@@ -1,6 +1,7 @@
 package com.meritz.client.service;
 
 import com.meritz.client.dto.ClientSignUpRequest;
+import com.meritz.client.dto.GetEstimatedFeeResponse;
 import com.meritz.client.entity.Client;
 import com.meritz.client.repository.ClientRepository;
 import com.meritz.room.dto.GetRoomsResponse;
@@ -59,7 +60,22 @@ public class ClientService {
                         .clientName(in.getClientName())
                         .clientPhone(in.getClientPhone())
                         .clientEmail(in.getClientEmail())
+                        .insuranceFee((int)(Math.random() * 140) + 60)
                         .build()
         );
+    }
+
+    public GetEstimatedFeeResponse getFee(Room room) {
+        Client client = room.getClient();
+
+        int currentFee = client.getInsuranceFee();
+        int increaseFee = (int)(currentFee * 1.2);
+        int accidentAmount = (increaseFee - currentFee) * 3;
+
+        return GetEstimatedFeeResponse.builder()
+                .currentFee(currentFee)
+                .increaseFee(increaseFee)
+                .accidentAmount(accidentAmount)
+                .build();
     }
 }

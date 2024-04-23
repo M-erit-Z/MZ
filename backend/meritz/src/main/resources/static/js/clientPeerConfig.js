@@ -329,12 +329,34 @@ function clearOverlays() {
     markers = []; // 마커 배열 초기화
 }
 
-function closeModal() {
-    document.getElementById('mapModal').style.display = 'none';
-}
-
 window.onclick = function(event) {
     if (event.target == document.getElementById('mapModal')) {
         closeModal();
     }
+}
+
+document.getElementById('estimateBtn').addEventListener('click', function() {
+    openModal('insuranceEstimateModal');
+    fetchInsuranceEstimate();
+});
+
+function fetchInsuranceEstimate() {
+    fetch(`/api/clients/fee/${roomId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('insuranceCurrentFee').textContent = `현재 보험료: ${data.currentFee} 만원`;
+            document.getElementById('insuranceIncreaseFee').textContent = `인상 후 보험료: ${data.increaseFee} 만원`;
+            document.getElementById('insuranceAccidentAmount').textContent = `사고 피해 액이 ${data.accidentAmount} 만원 이상일 시 보험처리를 권장합니다.`;
+        })
+        .catch(error => {
+            console.error('Error fetching insurance data:', error);
+        });
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
 }
