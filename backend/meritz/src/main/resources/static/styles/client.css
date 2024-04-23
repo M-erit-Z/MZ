@@ -147,3 +147,15 @@ button[onclick="sendMessage()"] {
     border-radius: 5px;
     cursor: pointer;
 }
+
+.modal {
+    display: none; /* 초기 상태는 보이지 않음 */
+    position: fixed;
+    z-index: 1; /* 다른 요소들보다 위에 표시 */
+    left: 0;
+    top: 0;
+    width: 100%; /* 전체 화면 너비 */
+    height: 100%; /* 전체 화면 높이 */
+    overflow: auto; /* 내용이 넘칠 경우 스크롤바 표시 */
+    background-color: rgba(0,0,0,0.4); /* 반투명 배경 */
+}

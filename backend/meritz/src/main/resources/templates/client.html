@@ -20,17 +20,26 @@
 
 <div class="controls">
     <button id="mapBtn">병원/카센터 찾기</button>
-    <button onclick="shareLocation()">보험료 예상</button>
+    <button id="estimateBtn">보험료 예상</button>
     <button onclick="endCall()">종료</button>
 </div>
 
 <div id="mapModal">
     <div class="modal-content">
         <div id="map">
-            <button class="close-btn" onclick="closeModal()">닫기</button>
+            <button class="close-btn" onclick="closeModal('mapModal')">&times;</button>
         </div>
         <button onclick="searchPlaces('병원')">병원</button>
         <button onclick="searchPlaces('자동차 정비소')">카센터</button>
+    </div>
+</div>
+
+<div id="insuranceEstimateModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal('insuranceEstimateModal')">&times;</button>
+        <p id="insuranceCurrentFee">현재 보험료: 로딩 중...</p>
+        <p id="insuranceIncreaseFee">인상 후 보험료: 로딩 중...</p>
+        <p id="insuranceAccidentAmount">사고 피해 액이 로딩 중... 만원 이상일 시 보험처리를 권장합니다.</p>
     </div>
 </div>
 
